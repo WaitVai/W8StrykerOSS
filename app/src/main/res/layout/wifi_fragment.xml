@@ -444,13 +444,4 @@
         app:fab_icon="@drawable/deauth"
         app:fab_orientation="portrait"
         app:label_text="@string/wifi_fab_deauth" />
-
-    <com.nambimobile.widgets.efab.FabOption
-        android:id="@+id/fab_evil_twin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_color="#FF1744"
-        app:fab_icon="@drawable/wifi_tethering"
-        app:fab_orientation="portrait"
-        app:label_text="Evil Twin Host" />
 </com.nambimobile.widgets.efab.ExpandableFabLayout>

@@ -27,10 +27,6 @@ import static com.zalexdev.stryker.wifi.attack.AttackStage.CAPTURE;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.DEAUTH;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.EAPOL;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.INJECT;
-import static com.zalexdev.stryker.wifi.attack.AttackStage.AP_START;
-import static com.zalexdev.stryker.wifi.attack.AttackStage.DHCP;
-import static com.zalexdev.stryker.wifi.attack.AttackStage.PORTAL;
-import static com.zalexdev.stryker.wifi.attack.AttackStage.CAPTURING;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.MONITOR;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.PINS;
 import static com.zalexdev.stryker.wifi.attack.AttackStage.PIXIE;
@@ -106,11 +102,6 @@ public enum AttackKind {
     MASS_DEAUTH("Broadcast deauthentication", R.drawable.deauth, R.color.red,
             new AttackStage[] { MONITOR, INJECT },
             new AttackMetric[] { ELAPSED, FRAMES, RATE, IFACE },
-            null),
-
-    EVIL_TWIN("Evil Twin Host", R.drawable.wifi_tethering, R.color.red,
-            new AttackStage[] { RADIO, AP_START, DHCP, PORTAL, CAPTURING },
-            new AttackMetric[] { ELAPSED, CLIENTS, CRACKED, STATE },
             null);
 
     public final String title;

