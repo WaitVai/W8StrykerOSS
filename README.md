@@ -14,9 +14,6 @@
   <a href="https://github.com/W8SOJIB/W8StrykerOSS">
     <img src="https://komarev.com/ghpvc/?username=W8SOJIB&repo=W8StrykerOSS&label=REPOSITORY%20VIEWS&color=0088cc&style=for-the-badge" alt="Repository Views" />
   </a>
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
-    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FW8SOJIB%2FW8StrykerOSS&count_bg=%230088CC&title_bg=%231E1E24&icon=&icon_color=%23E7E7E7&title=TOTAL%20VISITS&edge_flat=false" alt="Total Visits" />
-  </a>
 </p>
 
 <p align="center">
@@ -145,8 +142,13 @@ Join the official community for updates, announcements, wireless penetration tut
 </p>
 
 - **Telegram Channel**: [@W8TeamNew](https://t.me/W8TeamNew)
-- **GitHub Discussions**: [W8StrykerOSS Discussions](https://github.com/W8SOJIB/W8StrykerOSS/discussions)
 - **Bug Reports & Issues**: [W8StrykerOSS Issues](https://github.com/W8SOJIB/W8StrykerOSS/issues)
+
+---
+
+## 💖 Special Thanks & Credits
+
+- Special thanks to [**stryker.zalexdev.com**](https://stryker.zalexdev.com) for the original Stryker foundation, concepts, and research.
 
 ---
 
