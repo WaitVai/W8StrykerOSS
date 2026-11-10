@@ -256,7 +256,7 @@ public class Core {
         nw.add(cleanSsid);
         nw.add(cleanBssid);
         nw.add(prevSsid);
-        nw.add(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()));
+        nw.add(new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm a", java.util.Locale.getDefault()).format(new java.util.Date()));
         putListString(cleanBssid, nw);
         addSavedNetwork(cleanBssid);
     }
