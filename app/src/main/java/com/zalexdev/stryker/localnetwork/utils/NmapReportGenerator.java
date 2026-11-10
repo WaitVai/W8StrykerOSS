@@ -44,7 +44,7 @@ public class NmapReportGenerator extends IntentService {
             notificationId++;
             ip = intent.getStringExtra("ip");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NmapReporter")
-                    .setSmallIcon(R.drawable.bolt)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("Scanning " + ip)
                     .setContentText("Please wait...")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)

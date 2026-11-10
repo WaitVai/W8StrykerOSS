@@ -374,6 +374,8 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         if (!network.getWps()){
             wps_lock.setVisibility(View.GONE);
             wps_divider.setVisibility(View.GONE);
+            if (wps_manual_connect != null) wps_manual_connect.setVisibility(View.GONE);
+            if (wps_pbc_scan != null) wps_pbc_scan.setVisibility(View.GONE);
         }
 
         wps_lock.setOnClickListener(view -> {
@@ -463,9 +465,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
 
         // WPS Connect – manual PIN entry (directly launches attack with entered PIN, no second dialog)
         if (wps_manual_connect != null) {
-            if (!network.getWps()) {
-                wps_manual_connect.setVisibility(View.GONE);
-            }
             wps_manual_connect.setOnClickListener(view -> {
                 android.widget.EditText pinInput = new android.widget.EditText(context);
                 pinInput.setHint("Enter 8-digit WPS PIN");
@@ -490,9 +489,6 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
 
         // WPS Push Button (PBC) – auto scan
         if (wps_pbc_scan != null) {
-            if (!network.getWps()) {
-                wps_pbc_scan.setVisibility(View.GONE);
-            }
             wps_pbc_scan.setOnClickListener(view -> {
                 new MaterialAlertDialogBuilder(context)
                         .setTitle("WPS Push Button (PBC)")
@@ -1917,7 +1913,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         b.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.bolt)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Brute")
                 .setContentTitle(key)
                 .setChannelId(CHANNEL_ID)

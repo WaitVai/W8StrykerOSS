@@ -276,7 +276,7 @@ public class Slide3 extends Fragment implements IntroPage {
                 .setOngoing(true)
                 .setContentTitle(context.getResources().getString(R.string.notification_channel_updater))
                 .setContentText(context.getResources().getString(R.string.downloading_core))
-                .setSmallIcon(R.drawable.bolt)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setOnlyAlertOnce(true)
                 .setProgress(100, 0, true);
         notificationManager.notify(NOTIFICATION_ID, notification.build());

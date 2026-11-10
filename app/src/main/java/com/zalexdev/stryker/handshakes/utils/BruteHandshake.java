@@ -354,7 +354,7 @@ public class BruteHandshake {
         return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.bolt)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Brute")
                 .setContentTitle(title)
                 .setContentText(text)

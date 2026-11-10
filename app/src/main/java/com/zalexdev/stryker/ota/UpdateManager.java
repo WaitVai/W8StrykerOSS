@@ -72,7 +72,7 @@ public final class UpdateManager {
             NotificationManager nm =
                     (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationCenter.CHANNEL_ID)
-                    .setSmallIcon(R.drawable.bolt)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle(appContext.getString(R.string.ota_dialog_title))
                     .setOngoing(true)
                     .setOnlyAlertOnce(true)
