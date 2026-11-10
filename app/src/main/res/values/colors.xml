@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
     <color name="dialog_background_color">#FFFFFFFF</color>
-    <color name="stryker_accent_contrast">#304FFE</color>
-    <color name="stryker_accent">#1565C0</color>
-    <color name="stryker_logo_accent">#1565C0</color>
+    <color name="stryker_accent_contrast">#FF5252</color>
+    <color name="stryker_accent">#FF1744</color>
+    <color name="stryker_logo_accent">#FF1744</color>
     <color name="yellow">#F9A825</color>
-    <color name="red">#C62828</color>
-    <color name="green">#2E7D32</color>
-    <color name="welcome_ink">#3B82F6</color>
-    <color name="welcome_line_1">#A6C8FF</color>
-    <color name="welcome_line_2">#4A90E2</color>
+    <color name="red">#FF1744</color>
+    <color name="green">#00E676</color>
+    <color name="welcome_ink">#FF1744</color>
+    <color name="welcome_line_1">#FF8A80</color>
+    <color name="welcome_line_2">#FF5252</color>
     <color name="welcome_line_3">#FFFFFF</color>
-    <color name="welcome_logo_tile">#EAF1FB</color>
-    <color name="welcome_logo_stroke">#D3E2F7</color>
+    <color name="welcome_logo_tile">#FFEBEE</color>
+    <color name="welcome_logo_stroke">#FFCDD2</color>
 
-    <color name="intro_ink">#1565C0</color>
-    <color name="intro_line_1">#A6C8FF</color>
-    <color name="intro_line_2">#7FB3F0</color>
+    <color name="intro_ink">#FF1744</color>
+    <color name="intro_line_1">#FF8A80</color>
+    <color name="intro_line_2">#FF5252</color>
     <color name="intro_line_3">#FFFFFF</color>
 
     <color name="light_contrast">#FFFFFF</color>
@@ -31,7 +33,7 @@
     <color name="toolbar_color">#ededed</color>
     <color name="toolbar_darkness_color">#fff</color>
 
-    <color name="accent_wifi">#1565C0</color>
+    <color name="accent_wifi">#FF1744</color>
     <color name="accent_local">#AB47BC</color>
     <color name="accent_handshakes">#00897B</color>
     <color name="accent_exploits">#EF6C00</color>
@@ -69,8 +71,8 @@
     <color name="intro_text_dim">#4A6C8C</color>
     <color name="intro_chip_bg">#140A2540</color>
     <color name="intro_dot">#33002E5C</color>
-    <color name="intro_dot_active">#1565C0</color>
-    <color name="intro_button_bg">#1565C0</color>
+    <color name="intro_dot_active">#FF1744</color>
+    <color name="intro_button_bg">#FF1744</color>
     <color name="intro_button_text">#FFFFFF</color>
     <color name="intro_surface">#E6FFFFFF</color>
     <color name="intro_outline">#2A0A2540</color>

@@ -21,10 +21,28 @@ public class WiFINetwork {
     public String psk = "";
     public String pin = "";
     public String name = "";
+    public String previousSsid = "";
+    public boolean isNameChanged = false;
     public boolean canceled = false;
     public boolean three = false;
     public ArrayList<String> info = new ArrayList<>();
     public WiFINetwork() {
+    }
+
+    public String getPreviousSsid() {
+        return previousSsid;
+    }
+
+    public void setPreviousSsid(String previousSsid) {
+        this.previousSsid = previousSsid;
+    }
+
+    public boolean isNameChanged() {
+        return isNameChanged;
+    }
+
+    public void setNameChanged(boolean nameChanged) {
+        isNameChanged = nameChanged;
     }
 
     public void setVendor(String vendor) {

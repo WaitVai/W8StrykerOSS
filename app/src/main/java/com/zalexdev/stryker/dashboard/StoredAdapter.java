@@ -3,8 +3,12 @@ package com.zalexdev.stryker.dashboard;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.zalexdev.stryker.R;
 import com.zalexdev.stryker.utils.Core;
+import com.zalexdev.stryker.utils.QrHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -32,7 +37,7 @@ public class StoredAdapter extends RecyclerView.Adapter<StoredAdapter.ViewHolder
     public StoredAdapter(Context context, Activity activity, ArrayList<ArrayList<String>> stored) {
         this.activity = activity;
         this.context = context;
-        core = new Core(context);
+        this.core = new Core(context);
         if (stored == null) return;
         for (ArrayList<String> network : stored) {
             if (network != null && network.size() >= 4) {
@@ -52,16 +57,56 @@ public class StoredAdapter extends RecyclerView.Adapter<StoredAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder adapter, int position) {
         ArrayList<String> network = stored.get(position);
-        adapter.name.setText(field(network, 2) + " (" + field(network, 3).toUpperCase(Locale.ROOT) + ")");
-        adapter.additional.setText(getAdditionalInfo(network));
+        String psk = field(network, 0);
+        String pin = field(network, 1);
+        String ssid = field(network, 2);
+        String bssid = field(network, 3);
+        String prevSsid = field(network, 4);
+        if (prevSsid == null || prevSsid.isEmpty()) {
+            prevSsid = core.checkBssidNameChange(bssid, ssid);
+        }
+        String date = field(network, 5);
+
+        if (prevSsid != null && !prevSsid.isEmpty() && !prevSsid.equalsIgnoreCase(ssid)) {
+            adapter.name.setText(ssid + " [⚠️ Was: " + prevSsid + "]\n(" + bssid.toUpperCase(Locale.ROOT) + ")");
+        } else {
+            adapter.name.setText(ssid + " (" + bssid.toUpperCase(Locale.ROOT) + ")");
+        }
+
+        adapter.additional.setText(getStyledAdditionalInfo(network));
+
+        // Show details dialog with QR code and auto-connect
+        final String finalPrev = prevSsid;
+        View.OnClickListener showDetails = view -> {
+            QrHelper.showWifiDetailsDialog(
+                    context,
+                    ssid,
+                    bssid,
+                    psk,
+                    pin,
+                    finalPrev,
+                    date,
+                    () -> {
+                        core.connectWiFi2(ssid, psk);
+                        core.toaster("Connecting to " + ssid + "…");
+                    }
+            );
+        };
+
+        adapter.cardView.setOnClickListener(showDetails);
+        if (adapter.qr_code_btn != null) {
+            adapter.qr_code_btn.setOnClickListener(showDetails);
+        }
+
         adapter.copy_password.setOnClickListener(view -> {
-            core.copyToClipBoard(field(network, 0));
+            core.copyToClipBoard(psk);
             core.toaster("Password copied to clipboard!");
         });
         adapter.copy_password.setOnLongClickListener(view -> {
             core.toaster("Copy password to clipboard.");
             return false;
         });
+
         adapter.delete.setOnClickListener(view -> removeNetwork(network));
         adapter.cardView.setOnLongClickListener(view -> {
             removeNetwork(network);
@@ -84,17 +129,25 @@ public class StoredAdapter extends RecyclerView.Adapter<StoredAdapter.ViewHolder
         return value == null ? "" : value;
     }
 
-    private String getAdditionalInfo(ArrayList<String> network) {
-        StringBuilder result = new StringBuilder();
+    private CharSequence getStyledAdditionalInfo(ArrayList<String> network) {
         String password = field(network, 0);
         String wps_pin = field(network, 1);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
         if (!password.isEmpty()) {
-            result.append("Password: ").append(password);
+            int start = ssb.length();
+            ssb.append("Password: ").append(password);
+            ssb.setSpan(new ForegroundColorSpan(Color.parseColor("#FF1744")), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         if (!wps_pin.isEmpty()) {
-            result.append(!password.isEmpty() ? "\n" : "").append("WPS Pin: ").append(wps_pin);
+            if (ssb.length() > 0) ssb.append("\n");
+            int start = ssb.length();
+            ssb.append("WPS Pin: ").append(wps_pin);
+            ssb.setSpan(new ForegroundColorSpan(Color.parseColor("#00E676")), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new StyleSpan(Typeface.BOLD), start, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        return result.toString();
+        return ssb;
     }
 
     private void removeNetwork(ArrayList<String> network) {
@@ -118,6 +171,7 @@ public class StoredAdapter extends RecyclerView.Adapter<StoredAdapter.ViewHolder
         public TextView additional;
         public ImageView delete;
         public ImageView copy_password;
+        public ImageView qr_code_btn;
         public MaterialCardView cardView;
 
         public ViewHolder(View v) {
@@ -126,6 +180,7 @@ public class StoredAdapter extends RecyclerView.Adapter<StoredAdapter.ViewHolder
             additional = v.findViewById(R.id.additional);
             delete = v.findViewById(R.id.delete);
             copy_password = v.findViewById(R.id.copy);
+            qr_code_btn = v.findViewById(R.id.qr_code_btn);
             cardView = v.findViewById(R.id.item);
         }
     }

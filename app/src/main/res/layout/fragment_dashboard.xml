@@ -704,6 +704,7 @@
 
             <LinearLayout
                 android:id="@+id/news"
+                android:visibility="gone"
                 style="@style/DashboardRow">
 
                 <ImageView
@@ -722,6 +723,7 @@
 
             <LinearLayout
                 android:id="@+id/dash_report"
+                android:visibility="gone"
                 style="@style/DashboardRow">
 
                 <ImageView

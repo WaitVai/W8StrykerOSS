@@ -2,6 +2,7 @@ package com.zalexdev.stryker.wifi.attack;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -84,6 +85,9 @@ public final class AttackMonitor {
     private final TextView tabProgress;
     private final TextView tabTerminal;
     private final TextView resultView;
+    private final View qrContainer;
+    private final View qrCard;
+    private final ImageView qrImage;
     private final MaterialButton stopButton;
     private final MaterialButton primaryButton;
     private final MaterialButton secondaryButton;
@@ -139,6 +143,9 @@ public final class AttackMonitor {
         tabProgress = dialog.findViewById(R.id.attack_tab_progress);
         tabTerminal = dialog.findViewById(R.id.attack_tab_terminal);
         resultView = dialog.findViewById(R.id.attack_result);
+        qrContainer = dialog.findViewById(R.id.attack_qr_container);
+        qrCard = dialog.findViewById(R.id.attack_qr_card);
+        qrImage = dialog.findViewById(R.id.attack_qr_image);
         stopButton = dialog.findViewById(R.id.attack_stop);
         primaryButton = dialog.findViewById(R.id.attack_primary);
         secondaryButton = dialog.findViewById(R.id.attack_secondary);
@@ -302,8 +309,33 @@ public final class AttackMonitor {
             tintPill(ok ? greenColor : greyColor, ok ? "DONE" : "STOPPED");
             if (result != null && !result.isEmpty()) {
                 resultView.setVisibility(View.VISIBLE);
-                resultView.setText(result);
-                resultView.setTextColor(ok ? greenColor : greyColor);
+                if (ok) {
+                    resultView.setText(formatAttackResult(result));
+                } else {
+                    resultView.setText(result);
+                    resultView.setTextColor(greyColor);
+                }
+
+                // If password was recovered, display QR code and bind click listener
+                String foundPassword = extractPassword(result);
+                String foundPin = extractPin(result);
+                String currentSsid = targetView != null && targetView.getText() != null
+                        ? targetView.getText().toString().trim() : "";
+
+                if (ok && foundPassword != null && !foundPassword.isEmpty() && !currentSsid.isEmpty() && qrImage != null && qrContainer != null) {
+                    try {
+                        Bitmap qrBm = com.zalexdev.stryker.utils.QrHelper.generateQrBitmap(
+                                com.zalexdev.stryker.utils.QrHelper.buildWifiString(currentSsid, foundPassword), 400);
+                        if (qrBm != null) {
+                            qrImage.setImageBitmap(qrBm);
+                            qrContainer.setVisibility(View.VISIBLE);
+                            if (qrCard != null) {
+                                qrCard.setOnClickListener(v -> com.zalexdev.stryker.utils.QrHelper.showWifiQrDialog(
+                                        activity, currentSsid, foundPassword, foundPin));
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
             }
             synchronized (lock) {
                 for (StageRow row : stageRows.values()) {
@@ -316,6 +348,57 @@ public final class AttackMonitor {
             stopButton.setText(android.R.string.ok);
             stopButton.setIconResource(R.drawable.done);
         });
+    }
+
+    private CharSequence formatAttackResult(String text) {
+        if (text == null) return "";
+        android.text.SpannableStringBuilder ssb = new android.text.SpannableStringBuilder();
+        String[] lines = text.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (i > 0) ssb.append("\n");
+            int start = ssb.length();
+            ssb.append(line);
+            int end = ssb.length();
+
+            String lower = line.toLowerCase();
+            if (lower.contains("password") || lower.contains("pass:")) {
+                // RED for password
+                ssb.setSpan(new android.text.style.ForegroundColorSpan(Color.parseColor("#FF1744")), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else if (lower.contains("pin") || lower.contains("wps")) {
+                // GREEN for WPS PIN
+                ssb.setSpan(new android.text.style.ForegroundColorSpan(Color.parseColor("#00E676")), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                ssb.setSpan(new android.text.style.ForegroundColorSpan(greenColor), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        return ssb;
+    }
+
+    private static String extractPassword(String result) {
+        if (result == null) return null;
+        for (String line : result.split("\n")) {
+            String t = line.trim();
+            if (t.toLowerCase().startsWith("password:") || t.toLowerCase().startsWith("password found:")) {
+                String val = t.substring(t.indexOf(':') + 1).trim();
+                if (!val.isEmpty()) return val;
+            }
+        }
+        return null;
+    }
+
+    private static String extractPin(String result) {
+        if (result == null) return null;
+        for (String line : result.split("\n")) {
+            String t = line.trim();
+            if (t.toLowerCase().startsWith("pin:") || t.toLowerCase().startsWith("wps pin:")) {
+                String val = t.substring(t.indexOf(':') + 1).trim();
+                if (!val.isEmpty()) return val;
+            }
+        }
+        return null;
     }
 
     public void failStage(AttackStage stage, String detail, String result) {

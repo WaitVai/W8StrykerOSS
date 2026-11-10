@@ -69,6 +69,15 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/qr_code_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="9dp"
+            android:src="@drawable/ic_qr_code"
+            app:tint="@color/stryker_accent" />
+
+        <ImageView
             android:id="@+id/copy"
             android:layout_width="40dp"
             android:layout_height="40dp"

@@ -238,7 +238,14 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         } else {
             adapter.wifi_mac.setText(Core.HIDDEN_MAC);
         }
-        adapter.wifi_name.setText(wifi.getSsid());
+        String prevName = core.checkBssidNameChange(mac, wifi.getSsid());
+        if (prevName != null && !prevName.isEmpty() && !prevName.equalsIgnoreCase(wifi.getSsid())) {
+            wifi.setNameChanged(true);
+            wifi.setPreviousSsid(prevName);
+            adapter.wifi_name.setText(wifi.getSsid() + " ⚠️ (Was: " + prevName + ")");
+        } else {
+            adapter.wifi_name.setText(wifi.getSsid());
+        }
         adapter.wifi_name.setSelected(true);
 
         adapter.five_mark.setVisibility(View.GONE);
@@ -369,7 +376,11 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         });
 
 
-        name.setText(network.getSsid());
+        if (network.isNameChanged()) {
+            name.setText(network.getSsid() + " [⚠️ Previous: " + network.getPreviousSsid() + "]");
+        } else {
+            name.setText(network.getSsid());
+        }
         if (core.getBoolean("hide")){
             mac.setText(Core.HIDDEN_MAC);
         }else{
@@ -495,23 +506,22 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         monitor.primary(context.getString(R.string.auto_connect), () -> {
             monitor.primaryLabel("Connecting…");
             core.connectWiFi2(network.getSsid(), psk);
-            core.connectWiFi2(network.getSsid(), psk);
             new Thread(() -> {
-                long end = System.currentTimeMillis() + 20000;
+                long end = System.currentTimeMillis() + 25000;
                 while (System.currentTimeMillis() < end) {
                     if (checkIsSsidConnected(network.getSsid())) {
-                        activity.runOnUiThread(() -> monitor.primaryLabel("Connected"));
+                        activity.runOnUiThread(() -> monitor.primaryLabel("Connected ✓"));
                         return;
                     }
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(1200);
                     } catch (InterruptedException e) {
                         return;
                     }
                 }
                 activity.runOnUiThread(() -> {
                     monitor.primaryLabel(context.getString(R.string.auto_connect));
-                    core.toaster("The network wait time was longer than expected.");
+                    core.toaster("Network configured. If not auto-connected, select it in Android Wi-Fi settings.");
                 });
             }).start();
         });
@@ -1699,47 +1709,64 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
     }
 
 
-    public boolean checkIsSsidConnected(String ssid){
-        if (core.isRootless()) {
-            try {
-                android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager)
-                        context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                if (wm != null) {
-                    android.net.wifi.WifiInfo info = wm.getConnectionInfo();
-                    if (info != null && info.getSSID() != null) {
-                        return info.getSSID().replace("\"", "").equals(ssid);
+    public boolean checkIsSsidConnected(String ssid) {
+        if (ssid == null || ssid.isEmpty()) return false;
+        final String target = ssid.replace("\"", "").trim();
+
+        // 1. Android WifiManager API
+        try {
+            android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager)
+                    context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wm != null) {
+                android.net.wifi.WifiInfo info = wm.getConnectionInfo();
+                if (info != null && info.getSSID() != null) {
+                    String current = info.getSSID().replace("\"", "").trim();
+                    if (!current.isEmpty() && !current.equals("<unknown ssid>") && current.equalsIgnoreCase(target)) {
+                        return true;
                     }
                 }
-            } catch (Exception ignored) {
             }
-            return false;
+        } catch (Exception ignored) {
         }
-        String line;
-        boolean result = false;
-        try {
 
-            Process process = Runtime.getRuntime().exec("su -mm");
-            OutputStream stdin = process.getOutputStream();
-            InputStream stderr = process.getErrorStream();
-            InputStream stdout = process.getInputStream();
-            stdin.write(("dumpsys netstats | grep wlan" + '\n').getBytes());
-            stdin.write(("\n").getBytes());
-            stdin.flush();
-            stdin.close();
-            BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
-            while ((line = br.readLine()) != null) {
-                if (line.contains(ssid)) {
-                    result = true;
+        // 2. ConnectivityManager
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager)
+                    context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                android.net.Network activeNetwork = cm.getActiveNetwork();
+                if (activeNetwork != null) {
+                    android.net.NetworkCapabilities caps = cm.getNetworkCapabilities(activeNetwork);
+                    if (caps != null && caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) {
+                        // Wi-Fi is connected
+                    }
                 }
             }
-            br.close();
-            process.waitFor();
-            process.destroy();
-        } catch (IOException e) {
-        } catch (InterruptedException ex) {
+        } catch (Exception ignored) {
         }
 
-        return result;
+        // 3. Shell / Root dumpsys check
+        if (!core.isRootless()) {
+            try {
+                Process process = Runtime.getRuntime().exec(new String[]{"su", "-c", "cmd wifi status || dumpsys wifi"});
+                BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.contains("mWifiInfo") || line.contains("SSID:") || line.contains("WifiInfo:")) {
+                        if (line.contains(target)) {
+                            br.close();
+                            process.destroy();
+                            return true;
+                        }
+                    }
+                }
+                br.close();
+                process.destroy();
+            } catch (Exception ignored) {
+            }
+        }
+
+        return false;
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void createBruteNotification(String key, int prog, int max) {

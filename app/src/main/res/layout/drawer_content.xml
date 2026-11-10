@@ -255,6 +255,7 @@
 
         <include
             android:id="@+id/about_item"
+            android:visibility="gone"
             layout="@layout/drawer_row" />
 
         <com.google.android.material.textview.MaterialTextView

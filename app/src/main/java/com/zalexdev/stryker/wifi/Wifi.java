@@ -191,6 +191,9 @@ public class Wifi extends Fragment {
 
     public void scan() {
         if (context == null) return;
+        if (core != null) {
+            core.vibrate(60);
+        }
         fab.hide();
         failedscancount = 0;
         renderListState(false);

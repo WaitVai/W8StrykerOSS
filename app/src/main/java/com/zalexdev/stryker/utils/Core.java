@@ -161,15 +161,66 @@ public class Core {
         return context;
     }
 
-    public int connectWiFi2(String ssid, String psk){
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", ssid);
-        wifiConfig.preSharedKey = String.format("\"%s\"",psk);
-        WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
-        int netId = wifiManager.addNetwork(wifiConfig);
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
+    public int connectWiFi2(String ssid, String psk) {
+        if (ssid == null || ssid.isEmpty()) return -1;
+        final String cleanSsid = ssid.replace("\"", "");
+        final String cleanPsk = psk == null ? "" : psk.replace("\"", "");
+
+        // 1. Root-level Wi-Fi connection via `cmd -w wifi connect-network` (Android 10+)
+        // This is the most reliable method on rooted devices across all modern Android versions.
+        if (!isRootless()) {
+            new Thread(() -> {
+                try {
+                    String cmd1 = "cmd -w wifi connect-network \"" + cleanSsid + "\" " + (cleanPsk.isEmpty() ? "open" : "wpa2 \"" + cleanPsk + "\"");
+                    Process p1 = Runtime.getRuntime().exec(new String[]{"su", "-c", cmd1});
+                    p1.waitFor();
+                    String cmd2 = "cmd wifi connect-network \"" + cleanSsid + "\" " + (cleanPsk.isEmpty() ? "open" : "wpa2 \"" + cleanPsk + "\"");
+                    Process p2 = Runtime.getRuntime().exec(new String[]{"su", "-c", cmd2});
+                    p2.waitFor();
+                } catch (Exception ignored) {
+                }
+            }).start();
+        }
+
+        // 2. Android 10+ (API 29+) WifiNetworkSuggestion
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                android.net.wifi.WifiNetworkSuggestion.Builder builder =
+                        new android.net.wifi.WifiNetworkSuggestion.Builder()
+                                .setSsid(cleanSsid);
+                if (!cleanPsk.isEmpty()) {
+                    builder.setWpa2Passphrase(cleanPsk);
+                }
+                android.net.wifi.WifiNetworkSuggestion suggestion = builder.build();
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
+                if (wifiManager != null) {
+                    wifiManager.addNetworkSuggestions(java.util.Collections.singletonList(suggestion));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        // 3. Legacy WifiConfiguration (Android 9 and below)
+        int netId = -1;
+        try {
+            WifiConfiguration wifiConfig = new WifiConfiguration();
+            wifiConfig.SSID = String.format("\"%s\"", cleanSsid);
+            if (!cleanPsk.isEmpty()) {
+                wifiConfig.preSharedKey = String.format("\"%s\"", cleanPsk);
+            } else {
+                wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            }
+            WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
+            if (wifiManager != null) {
+                netId = wifiManager.addNetwork(wifiConfig);
+                if (netId != -1) {
+                    wifiManager.disconnect();
+                    wifiManager.enableNetwork(netId, true);
+                    wifiManager.reconnect();
+                }
+            }
+        } catch (Exception ignored) {
+        }
         return netId;
     }
 
@@ -178,16 +229,72 @@ public class Core {
         wifiManager.removeNetwork(netid);
     }
 
-    public void saveNetwork(String bssid, String psk, String pin, String ssid){
+    public void saveNetwork(String bssid, String psk, String pin, String ssid) {
         if (bssid == null || bssid.trim().isEmpty()) return;
+        String cleanBssid = bssid.trim().toUpperCase(java.util.Locale.ROOT);
+        String cleanSsid = ssid == null ? "" : ssid.trim();
+
+        ArrayList<String> existing = getListString(cleanBssid);
+        String prevSsid = "";
+        if (existing != null && existing.size() >= 3) {
+            String oldSsid = existing.get(2);
+            if (oldSsid != null && !oldSsid.isEmpty() && !oldSsid.equals(cleanSsid)) {
+                prevSsid = oldSsid;
+                putString("bssid_prev_" + cleanBssid, oldSsid);
+            } else if (existing.size() >= 5 && existing.get(4) != null) {
+                prevSsid = existing.get(4);
+            }
+        }
+        if (prevSsid.isEmpty()) {
+            prevSsid = getString("bssid_prev_" + cleanBssid);
+            if (prevSsid.equals(cleanSsid)) prevSsid = "";
+        }
+
         ArrayList<String> nw = new ArrayList<>();
         nw.add(psk == null ? "" : psk);
         nw.add(pin == null ? "" : pin);
-        nw.add(ssid == null ? "" : ssid);
-        nw.add(bssid);
-        putListString(bssid,nw);
-        addSavedNetwork(bssid);
+        nw.add(cleanSsid);
+        nw.add(cleanBssid);
+        nw.add(prevSsid);
+        nw.add(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()));
+        putListString(cleanBssid, nw);
+        addSavedNetwork(cleanBssid);
     }
+
+    public String checkBssidNameChange(String bssid, String currentSsid) {
+        if (bssid == null || currentSsid == null || currentSsid.isEmpty()) return null;
+        String cleanBssid = bssid.trim().toUpperCase(java.util.Locale.ROOT);
+        String cleanCurrent = currentSsid.trim();
+
+        // Check if we have a saved network with this BSSID
+        ArrayList<String> existing = getListString(cleanBssid);
+        if (existing != null && existing.size() >= 3) {
+            String savedSsid = existing.get(2);
+            if (savedSsid != null && !savedSsid.isEmpty() && !savedSsid.equalsIgnoreCase(cleanCurrent)) {
+                putString("bssid_prev_" + cleanBssid, savedSsid);
+                return savedSsid;
+            }
+            if (existing.size() >= 5 && existing.get(4) != null && !existing.get(4).isEmpty()) {
+                return existing.get(4);
+            }
+        }
+        String prev = getString("bssid_prev_" + cleanBssid);
+        if (!prev.isEmpty() && !prev.equalsIgnoreCase(cleanCurrent)) {
+            return prev;
+        }
+
+        // Track last seen SSID across scans
+        String lastSeen = getString("bssid_last_" + cleanBssid);
+        if (lastSeen.isEmpty()) {
+            putString("bssid_last_" + cleanBssid, cleanCurrent);
+        } else if (!lastSeen.equalsIgnoreCase(cleanCurrent)) {
+            putString("bssid_prev_" + cleanBssid, lastSeen);
+            putString("bssid_last_" + cleanBssid, cleanCurrent);
+            return lastSeen;
+        }
+        return null;
+    }
+
     public ArrayList<ArrayList<String>> getSavedNetworks(){
         ArrayList<ArrayList<String>> networks = new ArrayList<>();
         for (String bssid : new LinkedHashSet<>(getListString("bssids"))) {

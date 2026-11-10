@@ -227,6 +227,42 @@
                     android:textIsSelectable="true"
                     android:textSize="15sp"
                     android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/attack_qr_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/attack_qr_card"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:id="@+id/attack_qr_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:scaleType="fitCenter" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Tap QR code to expand"
+                        android:textColor="@color/grey"
+                        android:textSize="10sp" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 
