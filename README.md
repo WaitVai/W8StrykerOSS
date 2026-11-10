@@ -4,7 +4,7 @@
 
 W8StrykerOSS bundles a curated set of network, wireless and web security tools into a single rooted-Android application, exposing them through a unified, modern UI. It runs a Debian trixie (arm64) `chroot` under `/data/local/stryker/release` so heavyweight tools (Nmap, Metasploit, Nuclei, Hydra, SearchSploit, etc.) execute natively on the device — the same rootfs the rootless QEMU VM boots when root is unavailable. A built-in terminal (drawer → **Terminal**, or the **W8StrykerOSS Terminal** launcher icon) drops straight into that chroot — no external shell app required.
 
-- **Package**: `com.zalexdev.stryker`
+- **Package**: `com.w8stryker.oss`
 - **Version**: 6.0
 - **Min SDK**: 24 (Android 7.0) · **Target SDK**: 28
 - **License**: [GNU GPL v3.0](LICENSE) (bundled third-party components keep their own licenses — see in-app *About → Open-source licenses*)
@@ -103,7 +103,7 @@ If the variables are not set, the release build is left unsigned so CI / contrib
 
 ```
 app/
-├── src/main/java/com/zalexdev/stryker/
+├── src/main/java/com/w8stryker/oss/
 │   ├── MainActivity.java            # Single-Activity host, drawer navigation
 │   ├── about/                       # About / info page
 │   ├── appintro/                    # First-launch installer & slides
@@ -140,7 +140,7 @@ PRs and issues are welcome at [github.com/W8SOJIB/W8StrykerOSS](https://github.c
 
 When adding a feature:
 
-- Keep modules self-contained under `com.zalexdev.stryker.<module>`.
+- Keep modules self-contained under `com.w8stryker.oss.<module>`.
 - Reuse `Core.java` helpers for SharedPreferences, SQLite, asset extraction and root process execution rather than re-rolling them.
 - Funnel root commands through `Core.generateSuProcess()` (direct `su` or chroot dispatch).
 - Match the existing Material 3 design language — `MaterialCardView`, `MaterialButton`, dashboard accent colors, monospace terminals.

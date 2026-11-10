@@ -103,7 +103,7 @@
             app:strokeColor="@color/light_lite_contrast"
             app:strokeWidth="1dp">
 
-            <com.zalexdev.stryker.utils.AuroraView
+            <com.w8stryker.oss.utils.AuroraView
                 android:id="@+id/vm_aurora"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -124,7 +124,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.zalexdev.stryker.utils.VmRingView
+                    <com.w8stryker.oss.utils.VmRingView
                         android:id="@+id/vm_ring"
                         android:layout_width="52dp"
                         android:layout_height="52dp" />
@@ -310,7 +310,7 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <com.zalexdev.stryker.utils.SparklineView
+                        <com.w8stryker.oss.utils.SparklineView
                             android:id="@+id/vm_cpu_stat_graph"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
@@ -343,7 +343,7 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <com.zalexdev.stryker.utils.SparklineView
+                        <com.w8stryker.oss.utils.SparklineView
                             android:id="@+id/vm_ram_stat_graph"
                             android:layout_width="match_parent"
                             android:layout_height="46dp"

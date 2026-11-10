@@ -208,7 +208,7 @@
                         android:textColor="@color/grey"
                         android:textSize="10sp" />
 
-                    <com.zalexdev.stryker.utils.SparklineView
+                    <com.w8stryker.oss.utils.SparklineView
                         android:id="@+id/attack_rate"
                         android:layout_width="match_parent"
                         android:layout_height="46dp"

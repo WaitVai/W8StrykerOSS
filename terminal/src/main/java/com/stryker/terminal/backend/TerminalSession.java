@@ -155,7 +155,7 @@ public class TerminalSession extends TerminalOutput {
   }
 
   private static final String VM_RESIZE_MARKER =
-      "/data/data/com.zalexdev.stryker/files/.vm_pty_resize";
+      "/data/data/com.w8stryker.oss/files/.vm_pty_resize";
 
   public void updateSize(int columns, int rows) {
     if (mEmulator == null) {

@@ -167,7 +167,7 @@
             android:name=".handshakes.utils.BruteStopReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.zalexdev.stryker.BRUTE_STOP" />
+                <action android:name="com.w8stryker.oss.BRUTE_STOP" />
             </intent-filter>
         </receiver>
 

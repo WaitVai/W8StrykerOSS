@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".about.ThanksActivity">
 
-    <com.zalexdev.stryker.about.ThanksBackgroundView
+    <com.w8stryker.oss.about.ThanksBackgroundView
         android:id="@+id/thanks_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

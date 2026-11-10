@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'com.zalexdev.stryker'
+    namespace 'com.w8stryker.oss'
     compileSdk 37
     ndkVersion '25.1.8937393'
 
     defaultConfig {
-        applicationId "com.zalexdev.stryker"
+        applicationId "com.w8stryker.oss"
         minSdk 24
         targetSdk 37
         versionCode 651

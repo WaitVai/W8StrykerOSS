@@ -1,6 +1,6 @@
--keep class com.zalexdev.stryker.BuildConfig { *; }
+-keep class com.w8stryker.oss.BuildConfig { *; }
 
--keep class com.zalexdev.stryker.custom.** { *; }
+-keep class com.w8stryker.oss.custom.** { *; }
 
 -keep public class * extends androidx.fragment.app.Fragment
 -keep public class * extends androidx.appcompat.app.AppCompatActivity
@@ -51,7 +51,7 @@
     public static ** valueOf(java.lang.String);
 }
 
--keep class com.zalexdev.stryker.wpair.** { *; }
+-keep class com.w8stryker.oss.wpair.** { *; }
 
 -keepclassmembers class * implements android.os.Parcelable {
     public static final ** CREATOR;
