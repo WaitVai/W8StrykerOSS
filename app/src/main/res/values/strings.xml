@@ -1031,6 +1031,7 @@ manager</string>
     <string name="wpair_status_paired">PAIRED</string>
 
     <string name="about_title_label" translatable="false">W8StrykerOSS</string>
+    <string name="telegram_channel_handle" translatable="false">@W8TeamNew</string>
     <string name="about_tagline">A free and open-source mobile pentest suite for authorized testing.</string>
     <string name="about_pill_oss">Open-Source</string>
     <string name="about_pill_root">Root Powered</string>

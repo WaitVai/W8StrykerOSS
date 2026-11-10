@@ -12,6 +12,8 @@ public final class Links {
 
     public static final String CHAT = "https://github.com/W8SOJIB/W8StrykerOSS/discussions";
 
+    public static final String TELEGRAM = "https://t.me/W8TeamNew";
+
     private Links() {
     }
 }

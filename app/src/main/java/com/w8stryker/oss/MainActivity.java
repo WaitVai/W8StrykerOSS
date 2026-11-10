@@ -52,6 +52,7 @@ import com.w8stryker.oss.ota.UpdateManager;
 import com.w8stryker.oss.settings.SettingsNew;
 import com.w8stryker.oss.utils.Core;
 import com.w8stryker.oss.utils.PromoDialogs;
+import com.w8stryker.oss.utils.TelegramPromptDialog;
 import com.w8stryker.oss.hid.ui.HidFragment;
 import com.w8stryker.oss.usbarsenal.ui.UsbArsenalFragment;
 import com.w8stryker.oss.vnc.VNCFragment;
@@ -192,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
         boolean openUpdate = getIntent() != null
                 && getIntent().getBooleanExtra(EXTRA_OPEN_UPDATE, false);
         UpdateManager.checkAndPrompt(this, openUpdate);
+
+        TelegramPromptDialog.showOnAppOpen(this);
     }
 
     private void refreshEngineStatus() {
