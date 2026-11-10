@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/W8SOJIB/W8StrykerOSS">
-    <img src="https://komarev.com/ghpvc/?username=W8SOJIB&repo=W8StrykerOSS&label=REPOSITORY%20VIEWS&color=0088cc&style=for-the-badge" alt="Repository Views" />
+    <img src="https://visitor-badge.laobi.icu/badge?page_id=W8SOJIB.W8StrykerOSS&title=REPOSITORY%20VIEWS" height="28" alt="Repository Views" />
   </a>
 </p>
 
