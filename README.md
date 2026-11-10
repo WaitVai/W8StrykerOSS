@@ -1,185 +1,162 @@
-# W8StrykerOSS
+<p align="center">
+  <img src="./W8StrykerOSS%20Logo.png" alt="W8StrykerOSS Logo" width="180" style="filter: drop-shadow(0 0 25px rgba(255, 23, 68, 0.6));" />
+</p>
 
-> A free and open-source mobile pentest suite for Android. Authorized testing only.
+<h1 align="center" style="font-weight: 800; font-size: 2.8rem; margin-top: 10px;">
+  W8StrykerOSS
+</h1>
 
-W8StrykerOSS bundles a curated set of network, wireless and web security tools into a single rooted-Android application, exposing them through a unified, modern UI. It runs a Debian trixie (arm64) `chroot` under `/data/local/stryker/release` so heavyweight tools (Nmap, Metasploit, Nuclei, Hydra, SearchSploit, etc.) execute natively on the device — the same rootfs the rootless QEMU VM boots when root is unavailable. A built-in terminal (drawer → **Terminal**, or the **W8StrykerOSS Terminal** launcher icon) drops straight into that chroot — no external shell app required.
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=1000&color=FF1744&center=true&vCenter=true&width=650&lines=W8StrykerOSS+v6.5.1;Advanced+Mobile+Pentest+%26+Security+Suite;Auto+WPS+PBC+%26+Pixie+Dust+Live+Crack;Debian+Trixie+arm64+Root+%26+Rootless+VM;Join+Telegram+Community%3A+t.me%2FW8TeamNew" alt="Typing Banner" />
+</p>
 
-- **Package**: `com.w8stryker.oss`
-- **Version**: 6.0
-- **Min SDK**: 24 (Android 7.0) · **Target SDK**: 28
-- **License**: [GNU GPL v3.0](LICENSE) (bundled third-party components keep their own licenses — see in-app *About → Open-source licenses*)
-- **Source**: [github.com/W8SOJIB/W8StrykerOSS](https://github.com/W8SOJIB/W8StrykerOSS)
-- **Issues & Discussions**: [github.com/W8SOJIB/W8StrykerOSS/issues](https://github.com/W8SOJIB/W8StrykerOSS/issues)
+<p align="center">
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+    <img src="https://komarev.com/ghpvc/?username=W8SOJIB&repo=W8StrykerOSS&label=REPOSITORY%20VIEWS&color=0088cc&style=for-the-badge" alt="Repository Views" />
+  </a>
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FW8SOJIB%2FW8StrykerOSS&count_bg=%230088CC&title_bg=%231E1E24&icon=&icon_color=%23E7E7E7&title=TOTAL%20VISITS&edge_flat=false" alt="Total Visits" />
+  </a>
+</p>
 
----
+<p align="center">
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
+    <img src="https://img.shields.io/github/v/release/W8SOJIB/W8StrykerOSS?color=FF1744&label=LATEST%20RELEASE&style=for-the-badge&logo=github" alt="Latest Release" />
+  </a>
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
+    <img src="https://img.shields.io/badge/DOWNLOAD-APK%20v6.5.1-00E676?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" />
+  </a>
+  <a href="https://t.me/W8TeamNew">
+    <img src="https://img.shields.io/badge/TELEGRAM-@W8TeamNew-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Community" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/LICENSE-GNU%20GPL%20v3.0-blue?style=for-the-badge" alt="License GPL v3.0" />
+  </a>
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+    <img src="https://img.shields.io/badge/PLATFORM-Android%20%7C%20ARM64-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android ARM64" />
+  </a>
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+    <img src="https://img.shields.io/badge/ENGINE-Debian%20Trixie-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian Trixie Engine" />
+  </a>
+</p>
 
-## Capabilities
-
-| Module | Description |
-|---|---|
-| **Dashboard** | Live overview of the chroot, USB adapters, mounted state and quick actions. |
-| **WiFi networks** | Scan, deauth, handshake capture, WPS attacks (Pixie Dust, common pins, custom pins) via external monitor-mode adapters. |
-| **Handshakes** | Local handshake storage with rename, share, export to OnlineHashCrack and on-device cracking via Hashcat. |
-| **MAC changer** | Inline + dedicated MAC randomizer with persistent profiles. |
-| **WhisperPair (BLE)** | Fast Pair device discovery, CVE-2025-36911 vulnerability check and full exploit chain (RAW/RETROACTIVE/EXTENDED_RESPONSE), post-pair account-key write and HFP audio capture/passthrough. |
-| **Local network** | Nmap host discovery, port scans, OS fingerprinting, per-device exploit dispatch with a live terminal. |
-| **Nmap** | Direct Nmap interface with custom scripts, NSE, and exported reports. |
-| **Web scanner (Nuclei)** | Multi-target Nuclei scans with severity-grouped findings and per-finding evidence. |
-| **Arsenal** | Custom exploit / scanner database with template arguments (`{IP}`, `{PORT}`, `{MAC}`, `{GW}`, `{MASK}`). |
-| **HID Attacks** | DuckyScript-compatible USB HID injection — pure-Java parser (Hak5 v1 + v3 superset), 7 bundled keyboard layouts (US/GB/DE/FR/ES/IT/RU), live execution log and bundled sample payloads. |
-| **USB Arsenal** | USB-gadget profile manager — toggle HID keyboard/mouse, mass-storage, RNDIS/ECM/ACM functions on the fly, customise VID/PID/serial, mount `.img`/`.iso` images as removable disks. |
-| **Metasploit** | Native MSF console inside the chroot with sessions, payload generation and module browser. |
-| **GeoMac** | OSM-based map of captured BSSIDs / handshakes with WiGLE-style export (KML/CSV). |
-| **VNC desktop** | Stand-up an in-chroot XFCE/Xfce-VNC session and view it locally. |
-| **Core manager** | Mount / unmount / repair the chroot, manage installed components. |
-
----
-
-## Requirements
-
-- **Rooted Android device** (Magisk or KernelSU recommended).
-- **~1 GB free internal storage** for the chroot, bundled tools and signatures.
-- **External monitor-mode USB Wi-Fi adapter** for handshake capture and deauthentication (Atheros AR9271 / Realtek 88XXAU recommended).
-- **Gadget-capable kernel (optional)** for HID Attacks and USB Arsenal. Required kernel options:
-  - `CONFIG_USB_CONFIGFS=y`
-  - `CONFIG_USB_CONFIGFS_F_HID=y`
-  - `CONFIG_USB_CONFIGFS_MASS_STORAGE=y` (for mass-storage profiles)
-  - `CONFIG_USB_CONFIGFS_RNDIS=y` / `CONFIG_USB_CONFIGFS_ECM=y` (for network profiles)
-  - kernel ≥ 3.19, `/sys/class/udc/` populated
-  - NetHunter / KernelSU-Next kernels and most modern OEM kernels meet these requirements out of the box.
+<p align="center">
+  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
+    <img src="https://img.shields.io/badge/📥%20DIRECT%20DOWNLOAD%20APK%20(v6.5.1)-FF1744?style=for-the-badge&logo=googleplay&logoColor=white" height="40" alt="Direct Download APK" />
+  </a>
+</p>
 
 ---
 
-## Build
+## 🌟 Overview
 
-Standard Android Gradle build. Java 8 sources, ndk-build for native code, R8 minification for release.
+**W8StrykerOSS** is an advanced, free, and open-source mobile penetration testing suite built for Android devices. Designed for authorized security assessments, research, and wireless auditing, it turns your smartphone into a comprehensive cybersecurity workstation.
+
+Under the hood, **W8StrykerOSS** runs a full **Debian Trixie (arm64)** native Linux environment under `/data/local/stryker/release` with hardware acceleration. Industry-standard offensive security tools—including **Nmap, Metasploit Framework, Nuclei, Hydra, Hashcat, and SearchSploit**—execute at native performance, managed through an ultra-sleek modern UI.
+
+When running without root access, an integrated **Rootless Linux VM (QEMU / UML)** seamlessly boots the exact same Debian rootfs.
+
+---
+
+## ⚡ What's New in v6.5.1
+
+- 🛡️ **Brand & Namespace Migration**: Unified package name `com.w8stryker.oss` with modern high-contrast W8 shield branding.
+- 📡 **Auto WPS PBC Capture & Connect**: Full push-button Wi-Fi sweeps that disregard PIN lock flags (WPS PIN lock does not affect physical PBC mode), automatically acquiring credentials and connecting.
+- ✨ **Auto Pixie Dust Live Crack View**: Real-time dialog displaying cracked networks with **haptic vibration** and **dynamic 4-corner screen glow animations**.
+- 🔑 **Streamlined WPS PIN Entry**: Instant PIN input dialog with clear 12-hour timestamp formatting.
+- 💬 **Official Telegram Community**: Fast launch prompt connecting users directly to [@W8TeamNew](https://t.me/W8TeamNew).
+- 🎨 **Redesigned Launcher & System Icons**: Replaced all legacy icons with custom dark-themed shield assets across notifications and app launchers.
+
+---
+
+## 🚀 Key Modules & Capabilities
+
+| Module | Description | Highlights |
+|---|---|---|
+| 📡 **Wi-Fi Networks** | Comprehensive wireless scanner & attack engine | Auto WPS PBC Capture, Pixie Dust attack, PIN brute-force, handshake capture & deauth. |
+| 🔑 **Handshakes** | Secure on-device handshake storage & analysis | Direct offline cracking via Hashcat, export to OnlineHashCrack, and PCAP sharing. |
+| 🛡️ **WhisperPair (BLE)** | Fast Pair Bluetooth exploit suite | CVE-2025-36911 check, RAW/RETROACTIVE/EXTENDED_RESPONSE chains, account-key write & HFP audio tap. |
+| 🌐 **Local Network** | Local subnet discovery & service auditing | Deep Nmap host scans, OS fingerprinting, open port inspection, and one-tap exploit execution. |
+| ⚡ **HID Attacks** | BadUSB / DuckyScript hardware injection | Full DuckyScript v1+v3 engine, 7 keyboard layouts (US, GB, DE, FR, ES, IT, RU), live terminal output. |
+| 🧰 **USB Arsenal** | ConfigFS USB gadget profile manager | Emulate keyboard, mouse, mass storage, RNDIS/ECM/ACM, and mount bootable `.iso`/`.img` disks. |
+| 🎯 **Metasploit** | Full-fledged Metasploit Framework console | Embedded console, multi-session management, payload generator, and exploit module browser. |
+| 🔍 **Web Scanner** | Web security engine powered by Nuclei | Multi-target concurrent scans with CVE detection and structured vulnerability reporting. |
+| 🗺️ **GeoMac** | Visual geolocation mapping | Plot captured access points on interactive OpenStreetMap with KML/CSV exports. |
+| 💻 **Integrated Terminal** | Instant access Debian terminal shell | Multi-tab NeoTerm console dropping directly into the arm64 chroot environment. |
+
+---
+
+## 📲 Quick Installation
+
+### Option 1: Direct APK Download (Recommended)
+1. Download the latest release: [**W8StrykerOSS.apk (v6.5.1)**](https://github.com/W8SOJIB/W8StrykerOSS/releases/latest)
+2. Sideload and install the APK on your Android device (`Android 7.0+`).
+3. Launch **W8StrykerOSS**:
+   - **Rooted Devices**: Grant root access (`su`) via Magisk / KernelSU / APatch. The initial setup will automatically download and mount the Debian Trixie rootfs (`chroot64-debian.tar.gz`).
+   - **Non-Rooted Devices**: Select Rootless VM mode. The embedded QEMU / User-Mode Linux (UML) engine will boot the environment in guest mode.
+
+### Option 2: ADB Install
+```bash
+adb install -r W8StrykerOSS.apk
+```
+
+---
+
+## 🛠️ Hardware Requirements
+
+- **Device Architecture**: `arm64-v8a` (64-bit ARM).
+- **Operating System**: Android 7.0 (API 24) to Android 15+.
+- **Free Storage**: ~1.5 GB recommended for the full Debian rootfs and security databases.
+- **Wireless Adapter (for Monitor Mode / Packet Injection)**:
+  - Atheros AR9271 (`ath9k_htc`)
+  - Realtek RTL8812AU / RTL8814AU / RTL8821AU
+  - Ralink / MediaTek RT3070 / RT5370 / MT7601U
+- **Kernel Support (Optional for USB Arsenal & HID Attacks)**:
+  - Gadget ConfigFS enabled (`CONFIG_USB_CONFIGFS=y`, `CONFIG_USB_CONFIGFS_F_HID=y`, `CONFIG_USB_CONFIGFS_MASS_STORAGE=y`).
+
+---
+
+## 💻 Building from Source
 
 ```bash
-# Debug APK
+# Clone the repository
+git clone https://github.com/W8SOJIB/W8StrykerOSS.git
+cd W8StrykerOSS
+
+# Build Debug APK
 ./gradlew assembleDebug
 
-# Release APK (minified + R8)
+# Build Release APK
 ./gradlew assembleRelease
-
-# Install on a connected device
-./gradlew installDebug
-
-# Lint
-./gradlew lint
 ```
 
-Output APKs land in `app/build/outputs/apk/`.
-
-### Release signing
-
-Configure these in `~/.gradle/gradle.properties` (or pass via `-P` / environment):
-
-```properties
-STRYKER_RELEASE_STORE_FILE=/path/to/keystore.jks
-STRYKER_RELEASE_STORE_PASSWORD=...
-STRYKER_RELEASE_KEY_ALIAS=...
-STRYKER_RELEASE_KEY_PASSWORD=...
-```
-
-If the variables are not set, the release build is left unsigned so CI / contributors can still produce an APK.
+Generated APKs will be located in `app/build/outputs/apk/`.
 
 ---
 
-## Installation (end users)
+## 💬 Community & Support
 
-1. Install the APK on a **rooted** device (`adb install StrykerOSS-6.0.apk` or sideload).
-2. On first launch the in-app installer (`AppIntroActivity`) will:
-   - Request root (`su`).
-   - Request runtime permissions (storage, location, notifications, Bluetooth, audio).
-   - Download and unpack the Debian trixie arm64 `chroot` core (`chroot64-debian.tar.gz`).
-   - Mount the chroot at `/data/local/stryker/release`.
-   - Install optional components (Metasploit, Nuclei, Hydra, SearchSploit).
-3. Open the built-in terminal (drawer → **Terminal**) for a shell straight into the chroot.
-4. Plug in a supported USB Wi-Fi adapter for monitor-mode features.
+Join the official community for updates, announcements, wireless penetration tutorials, and fast support:
 
----
+<p align="center">
+  <a href="https://t.me/W8TeamNew">
+    <img src="https://img.shields.io/badge/JOIN%20TELEGRAM%20CHANNEL-@W8TeamNew-229ED9?style=for-the-badge&logo=telegram&logoColor=white" height="42" alt="Join Telegram" />
+  </a>
+</p>
 
-## Project layout
-
-```
-app/
-├── src/main/java/com/w8stryker/oss/
-│   ├── MainActivity.java            # Single-Activity host, drawer navigation
-│   ├── about/                       # About / info page
-│   ├── appintro/                    # First-launch installer & slides
-│   ├── arsenal/                     # Custom exploit/scanner database
-│   ├── coremanger/                  # Chroot manage / repair UI
-│   ├── custom/                      # POJO domain models
-│   ├── dashboard/                   # Home dashboard
-│   ├── geomac/                      # OSM map for captured BSSIDs
-│   ├── handshakes/                  # Handshake browser + cracking
-│   ├── hid/                         # HID Attacks: DuckyScript engine, keymaps, executor, UI
-│   ├── hydra/                       # Hydra integration
-│   ├── localnetwork/                # LAN scan + exploit dispatch
-│   ├── macchanger/                  # MAC randomizer
-│   ├── metasploit/                  # MSF integration
-│   ├── nmap/                        # Nmap UI
-│   ├── nuclei/                      # Web vuln scanner
-│   ├── searchsploit/                # ExploitDB browser
-│   ├── settings/                    # User settings
-│   ├── usbarsenal/                  # USB Arsenal: gadget profiles, configfs orchestration
-│   ├── utils/                       # Core helpers, process wrappers
-│   ├── vnc/                         # In-chroot VNC desktop
-│   ├── wifi/                        # WiFi scan / attack
-│   └── wpair/                       # WhisperPair (BLE Fast Pair) module
-├── src/main/jni/                    # Native code (ndk-build)
-├── src/main/assets/                 # Chroot scripts, wordlists, busybox
-└── src/main/res/                    # Layouts, drawables, strings, themes
-```
+- **Telegram Channel**: [@W8TeamNew](https://t.me/W8TeamNew)
+- **GitHub Discussions**: [W8StrykerOSS Discussions](https://github.com/W8SOJIB/W8StrykerOSS/discussions)
+- **Bug Reports & Issues**: [W8StrykerOSS Issues](https://github.com/W8SOJIB/W8StrykerOSS/issues)
 
 ---
 
-## Contributing
+## ⚖️ Disclaimer & License
 
-PRs and issues are welcome at [github.com/W8SOJIB/W8StrykerOSS](https://github.com/W8SOJIB/W8StrykerOSS).
+> [!WARNING]
+> **W8StrykerOSS** is developed exclusively for authorized security auditing, educational purposes, and defensive vulnerability assessments. Utilizing these tools against networks or systems without explicit prior permission is strictly illegal. The developers assume no liability for misuse.
 
-When adding a feature:
+Released under the **GNU General Public License v3.0** ([GPL-3.0](LICENSE)).
 
-- Keep modules self-contained under `com.w8stryker.oss.<module>`.
-- Reuse `Core.java` helpers for SharedPreferences, SQLite, asset extraction and root process execution rather than re-rolling them.
-- Funnel root commands through `Core.generateSuProcess()` (direct `su` or chroot dispatch).
-- Match the existing Material 3 design language — `MaterialCardView`, `MaterialButton`, dashboard accent colors, monospace terminals.
-- Keep `targetSdk = 28` unless you are ready to migrate all storage / permission code paths.
-
----
-
-## License
-
-StrykerOSS is free software: you can redistribute it and/or modify it under the
-terms of the **GNU General Public License v3.0** as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later version.
-The full text is in [`LICENSE`](LICENSE).
-
-```
-StrykerOSS — a mobile pentest suite for Android.
-Copyright (C) 2021-2026 zalexdev
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-```
-
-Bundled third-party components (terminal emulator, SDL/Xorg, custom-tabs, wordlists,
-PoCs, etc.) are distributed under their own GPLv3-compatible licenses — see
-[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) and the in-app
-*About → Open-source licenses* screen for attributions.
-
----
-
-## Disclaimer
-
-StrykerOSS is provided **for authorized security testing, education and research only**. You are responsible for complying with all applicable laws and obtaining explicit permission before testing any system or device you do not own. The authors accept no liability for misuse.
+<p align="center">
+  <sub>Developed &amp; Maintained by <b>W8Team</b> · &copy; 2026 W8StrykerOSS</sub>
+</p>
