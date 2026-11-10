@@ -661,6 +661,7 @@ public class Wifi extends Fragment {
         final Timer[] timer = {new Timer()};
         final int[] totalSuccess = {0};
         final int[] total = {0};
+        final StringBuilder crackedLog = new StringBuilder();
 
         monitor.metric(AttackMetric.PROGRESS, "0 / " + list.size());
         monitor.metric(AttackMetric.CRACKED, 0);

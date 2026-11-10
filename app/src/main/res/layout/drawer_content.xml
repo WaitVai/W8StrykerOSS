@@ -23,19 +23,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <FrameLayout
+            <ImageView
+                android:id="@+id/drawer_logo"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/dashboard_tile_bg_blue">
-
-                <ImageView
-                    android:id="@+id/drawer_logo"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_white"
-                    app:tint="@color/stryker_logo_accent" />
-            </FrameLayout>
+                android:src="@drawable/w8logo"
+                android:scaleType="fitCenter" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -48,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/lato"
-                    android:text="StrykerOSS"
+                    android:text="W8StrykerOSS"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -61,7 +54,8 @@
                     android:fontFamily="monospace"
                     android:text="v6.0"
                     android:textColor="@color/grey"
-                    android:textSize="11sp" />
+                    android:textSize="11sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <ImageView

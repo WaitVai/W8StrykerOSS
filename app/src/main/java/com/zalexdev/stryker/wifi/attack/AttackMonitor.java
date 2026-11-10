@@ -85,6 +85,7 @@ public final class AttackMonitor {
     private final TextView tabProgress;
     private final TextView tabTerminal;
     private final TextView resultView;
+    private final TextView crackedLogView;
     private final View qrContainer;
     private final View qrCard;
     private final ImageView qrImage;
@@ -143,6 +144,7 @@ public final class AttackMonitor {
         tabProgress = dialog.findViewById(R.id.attack_tab_progress);
         tabTerminal = dialog.findViewById(R.id.attack_tab_terminal);
         resultView = dialog.findViewById(R.id.attack_result);
+        crackedLogView = dialog.findViewById(R.id.attack_cracked_log);
         qrContainer = dialog.findViewById(R.id.attack_qr_container);
         qrCard = dialog.findViewById(R.id.attack_qr_card);
         qrImage = dialog.findViewById(R.id.attack_qr_image);
@@ -199,6 +201,45 @@ public final class AttackMonitor {
 
     public AttackKind kind() {
         return kind;
+    }
+
+    /** Append a cracked network entry to the live log view (shown during Auto Pixie sweep). */
+    public void showCrackedLog(String log) {
+        ui(() -> {
+            if (crackedLogView != null) {
+                crackedLogView.setVisibility(View.VISIBLE);
+                crackedLogView.setText(log);
+            }
+        });
+    }
+
+    /** Flash a full-screen lightning overlay on the activity window to celebrate a crack. */
+    public static void triggerLightningEffect(Activity act) {
+        if (act == null || act.isFinishing()) return;
+        act.runOnUiThread(() -> {
+            try {
+                android.view.ViewGroup root = (android.view.ViewGroup) act.getWindow().getDecorView();
+                // Corner lightning effect – 4 overlay views animating from each corner
+                int[] colors = {0x88FF1744, 0x66FFFFFF, 0x44FF1744};
+                for (int i = 0; i < colors.length; i++) {
+                    final android.view.View flash = new android.view.View(act);
+                    flash.setBackgroundColor(colors[i]);
+                    flash.setLayoutParams(new android.view.ViewGroup.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+                    flash.setAlpha(1f);
+                    root.addView(flash);
+                    long delay = i * 120L;
+                    flash.postDelayed(() -> flash.animate()
+                            .alpha(0f)
+                            .setDuration(600)
+                            .withEndAction(() -> {
+                                try { root.removeView(flash); } catch (Exception ignored) {}
+                            })
+                            .start(), delay);
+                }
+            } catch (Exception ignored) {}
+        });
     }
 
     public boolean alive() {

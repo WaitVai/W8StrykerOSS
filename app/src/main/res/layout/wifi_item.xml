@@ -133,6 +133,24 @@
                     android:visibility="gone" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/pbc_mark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/chip_pill_bg"
+                    android:backgroundTint="#FFF8E1"
+                    android:letterSpacing="0.04"
+                    android:paddingStart="5dp"
+                    android:paddingTop="1dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="1dp"
+                    android:text="PBC"
+                    android:textColor="#F9A825"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/five_mark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

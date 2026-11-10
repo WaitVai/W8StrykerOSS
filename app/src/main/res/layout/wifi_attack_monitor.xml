@@ -228,6 +228,21 @@
                     android:textSize="15sp"
                     android:visibility="gone" />
 
+                <!-- Live cracked log for Auto Pixie Dust sweep -->
+                <TextView
+                    android:id="@+id/attack_cracked_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="18dp"
+                    android:fontFamily="monospace"
+                    android:padding="10dp"
+                    android:textColor="#FF1744"
+                    android:textIsSelectable="true"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:id="@+id/attack_qr_container"
                     android:layout_width="match_parent"

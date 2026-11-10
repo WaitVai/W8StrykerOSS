@@ -253,6 +253,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         adapter.lock_mark.setVisibility(View.GONE);
         adapter.pixie_mark.setVisibility(View.GONE);
         adapter.key_mark.setVisibility(View.GONE);
+        if (adapter.pbc_mark != null) adapter.pbc_mark.setVisibility(View.GONE);
 
         int signalPercent = Math.max(0, Math.min(100, 100 - wifi.getPower()));
         adapter.wifi_power.setText(signalPercent + "%");
@@ -268,6 +269,12 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             adapter.wps_mark.setVisibility(View.VISIBLE);
         } else if (wifi.getBlocked()) {
             adapter.lock_mark.setVisibility(View.VISIBLE);
+        }
+        // Show yellow PBC badge for WPS push-button capable networks (detected via WPS info)
+        if (adapter.pbc_mark != null && wifi.getWps() && !wifi.getBlocked()) {
+            // Show PBC mark when network SSID/vendor suggests PBC support or WPS is active
+            // Conservative: show for all open WPS networks (can be refined with scan flags)
+            adapter.pbc_mark.setVisibility(View.VISIBLE);
         }
         if (wifi.getOK()) {
             adapter.key_mark.setVisibility(View.VISIBLE);
@@ -345,6 +352,8 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         MaterialCardView pmkid_capture = dialog.findViewById(R.id.pmkid_capture);
         MaterialCardView info = dialog.findViewById(R.id.additional_info);
         MaterialCardView wps_lock = dialog.findViewById(R.id.wps_locked);
+        MaterialCardView wps_manual_connect = dialog.findViewById(R.id.wps_manual_connect);
+        MaterialCardView wps_pbc_scan = dialog.findViewById(R.id.wps_pbc_scan);
 
         pmkid_capture.setOnClickListener(view -> {
             new MaterialAlertDialogBuilder(context)
@@ -452,6 +461,48 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             attackDialog(network, 7);
         });
 
+        // WPS Connect – manual PIN entry dialog
+        if (wps_manual_connect != null) {
+            if (!network.getWps()) {
+                wps_manual_connect.setVisibility(View.GONE);
+            }
+            wps_manual_connect.setOnClickListener(view -> {
+                android.widget.EditText pinInput = new android.widget.EditText(context);
+                pinInput.setHint("Enter 8-digit WPS PIN");
+                pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                pinInput.setMaxLines(1);
+                new MaterialAlertDialogBuilder(context)
+                        .setTitle("WPS Connect – Enter PIN")
+                        .setMessage("Enter the router's 8-digit WPS PIN to try connecting and retrieve the password.")
+                        .setView(pinInput)
+                        .setPositiveButton("Connect", (d2, w) -> {
+                            String pin = pinInput.getText() != null ? pinInput.getText().toString().trim() : "";
+                            if (pin.length() < 4) {
+                                Toast.makeText(context, "PIN too short", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            network.setPin(pin);
+                            attackDialog(network, 5);
+                        })
+                        .setNegativeButton(android.R.string.cancel, (d2, w) -> d2.dismiss())
+                        .show();
+            });
+        }
+
+        // WPS Push Button (PBC) – auto scan
+        if (wps_pbc_scan != null) {
+            if (!network.getWps()) {
+                wps_pbc_scan.setVisibility(View.GONE);
+            }
+            wps_pbc_scan.setOnClickListener(view -> {
+                new MaterialAlertDialogBuilder(context)
+                        .setTitle("WPS Push Button (PBC)")
+                        .setMessage("Press the physical WPS button on the router NOW, then tap Start to begin the PBC scan.")
+                        .setPositiveButton("Start Scan", (d2, w) -> attackDialog(network, 9))
+                        .setNegativeButton(android.R.string.cancel, (d2, w) -> d2.dismiss())
+                        .show();
+            });
+        }
 
         dialog.show();
 
@@ -477,6 +528,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             case 6:  return AttackKind.WPS_PIN_LIST;
             case 7:  return AttackKind.DEAUTH_ONE;
             case 8:  return AttackKind.WPS_PIN_NULL;
+            case 9:  return AttackKind.WPS_PIN_ONE; // PBC uses similar kind
             case 1:
             default: return AttackKind.PIXIE_DUST;
         }
@@ -1108,6 +1160,40 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 @Override
                 public void onEvent(String line) {
 
+                }
+            };
+        }
+        else if (type == 9) {
+            // WPS Push Button (PBC) attack – uses --pbc flag with pixie.py / reaver
+            monitor.note("WPS PBC – waiting for router push-button event…");
+            monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Taking the radio off Android");
+            new Thread(core::wpsDisableWifiIfEnabled, "wps-radio-off").start();
+            String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
+                    + core.wpsIfaceDownFlag() + " --pbc -b " + network.getMac();
+            oneshot = new AdvancedProcess(activity, context, cmd, true) {
+                @Override
+                public void onFinished(ArrayList<String> outputList) {
+                    restoreWpsInterface();
+                    WiFINetwork back = issuccess(outputList);
+                    if (back.getOK()) {
+                        if (core.isStoreEnabled()) {
+                            core.saveNetwork(network.getMac(), back.getPsk(), back.getPin(), network.ssid);
+                        }
+                        monitor.stage(AttackStage.WPS, AttackStage.State.DONE, "PBC handshake accepted");
+                        monitor.finish(true, context.getResources().getString(R.string.pass) + back.getPsk());
+                        offerConnect(monitor, network, back.getPsk());
+                    } else {
+                        monitor.finish(false, "PBC handshake failed or timed out.\nMake sure you pressed the router's WPS button.");
+                    }
+                }
+
+                @Override
+                public void onNewLine(String line) {
+                    monitor.wps(masked(line));
+                }
+
+                @Override
+                public void onEvent(String line) {
                 }
             };
         }
@@ -1859,6 +1945,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         public TextView pixie_mark;
         public TextView lock_mark;
         public TextView key_mark;
+        public TextView pbc_mark;
         public TextView iswps;
         public View card;
         public ImageView icon;
@@ -1879,6 +1966,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             pixie_mark = v.findViewById(R.id.pixie_mark);
             lock_mark = v.findViewById(R.id.lock_mark);
             key_mark = v.findViewById(R.id.key_mark);
+            pbc_mark = v.findViewById(R.id.pbc_mark);
             divider = v.findViewById(R.id.wifi_item_divider);
         }
 
