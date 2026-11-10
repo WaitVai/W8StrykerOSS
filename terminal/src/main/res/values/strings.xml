@@ -2,7 +2,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   tools:ignore="MissingTranslation">
 
-  <string name="app_name" translatable="false">Stryker Terminal</string>
+  <string name="app_name" translatable="false">W8StrykerOSS Terminal</string>
   <string name="copy_text">Copy</string>
   <string name="paste_text">Paste</string>
   <string name="super_paste_text">Super Paste</string>
@@ -70,7 +70,7 @@
   <string name="term_settings_licenses_title">Open-source licenses</string>
   <string name="term_settings_licenses_subtitle">Third-party components</string>
   <string name="term_settings_github_title">Project on GitHub</string>
-  <string name="term_settings_github_subtitle">github.com/zalexdev/strykerapp</string>
+  <string name="term_settings_github_subtitle">github.com/W8SOJIB/W8StrykerOSS</string>
 
   <string name="term_pref_initial_command_title">Initial command</string>
   <string name="term_pref_initial_command_subtitle">Run automatically in every new session</string>

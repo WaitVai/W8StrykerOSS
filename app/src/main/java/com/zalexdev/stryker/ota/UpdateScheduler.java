@@ -19,15 +19,9 @@ public final class UpdateScheduler {
 
     public static void schedule(Context context) {
         try {
-            Constraints constraints = new Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build();
-            PeriodicWorkRequest request = new PeriodicWorkRequest.Builder(
-                    UpdateWorker.class, 12, TimeUnit.HOURS)
-                    .setConstraints(constraints)
-                    .build();
+            // Auto-update disabled
             WorkManager.getInstance(context.getApplicationContext())
-                    .enqueueUniquePeriodicWork(UNIQUE_WORK, ExistingPeriodicWorkPolicy.UPDATE, request);
+                    .cancelUniqueWork(UNIQUE_WORK);
         } catch (Exception ignored) {
         }
     }

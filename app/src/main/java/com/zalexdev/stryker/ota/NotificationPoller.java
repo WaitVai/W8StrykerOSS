@@ -41,14 +41,6 @@ public final class NotificationPoller {
         if (changed) {
             prefs.edit().putStringSet(KEY_SEEN, seen).apply();
         }
-
-        if (manifest.app != null && manifest.app.versionCode > BuildConfig.VERSION_CODE) {
-            if (prefs.getInt(KEY_OTA_NOTIFIED, 0) != manifest.app.versionCode) {
-                NotificationCenter.postUpdate(context,
-                        context.getString(R.string.ota_update_available_title),
-                        context.getString(R.string.ota_update_available_body, manifest.app.versionName));
-                prefs.edit().putInt(KEY_OTA_NOTIFIED, manifest.app.versionCode).apply();
-            }
-        }
+        // Auto-update notification disabled
     }
 }

@@ -3,6 +3,12 @@ param (
     [string]$Token = $env:GH_TOKEN
 )
 
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+    if (Test-Path "C:\Program Files\GitHub CLI\gh.exe") {
+        $env:PATH = "C:\Program Files\GitHub CLI;" + $env:PATH
+    }
+}
+
 $repo = "W8SOJIB/W8StrykerOSS"
 $chrootBase = "D:\W8StrykerOSS\W8Chroot"
 $vmBase = "D:\W8StrykerOSS\W8VM"

@@ -1,16 +1,15 @@
-# StrykerOSS
+# W8StrykerOSS
 
 > A free and open-source mobile pentest suite for Android. Authorized testing only.
 
-StrykerOSS bundles a curated set of network, wireless and web security tools into a single rooted-Android application, exposing them through a unified, modern UI. It runs a Debian trixie (arm64) `chroot` under `/data/local/stryker/release` so heavyweight tools (Nmap, Metasploit, Nuclei, Hydra, SearchSploit, etc.) execute natively on the device — the same rootfs the rootless QEMU VM boots when root is unavailable. A built-in terminal (drawer → **Terminal**, or the **Stryker Terminal** launcher icon) drops straight into that chroot — no external shell app required.
+W8StrykerOSS bundles a curated set of network, wireless and web security tools into a single rooted-Android application, exposing them through a unified, modern UI. It runs a Debian trixie (arm64) `chroot` under `/data/local/stryker/release` so heavyweight tools (Nmap, Metasploit, Nuclei, Hydra, SearchSploit, etc.) execute natively on the device — the same rootfs the rootless QEMU VM boots when root is unavailable. A built-in terminal (drawer → **Terminal**, or the **W8StrykerOSS Terminal** launcher icon) drops straight into that chroot — no external shell app required.
 
 - **Package**: `com.zalexdev.stryker`
 - **Version**: 6.0
 - **Min SDK**: 24 (Android 7.0) · **Target SDK**: 28
 - **License**: [GNU GPL v3.0](LICENSE) (bundled third-party components keep their own licenses — see in-app *About → Open-source licenses*)
-- **Project site**: [stryker.zalexdev.com](https://stryker.zalexdev.com)
-- **Channel**: [t.me/strykerapp](https://t.me/strykerapp) · **Chat**: [t.me/strykerchat](https://t.me/strykerchat)
-- **Source**: [github.com/zalexdev/strykerapp](https://github.com/zalexdev/strykerapp)
+- **Source**: [github.com/W8SOJIB/W8StrykerOSS](https://github.com/W8SOJIB/W8StrykerOSS)
+- **Issues & Discussions**: [github.com/W8SOJIB/W8StrykerOSS/issues](https://github.com/W8SOJIB/W8StrykerOSS/issues)
 
 ---
 
@@ -137,7 +136,7 @@ app/
 
 ## Contributing
 
-PRs and issues are welcome at [github.com/zalexdev/strykerapp](https://github.com/zalexdev/strykerapp).
+PRs and issues are welcome at [github.com/W8SOJIB/W8StrykerOSS](https://github.com/W8SOJIB/W8StrykerOSS).
 
 When adding a feature:
 

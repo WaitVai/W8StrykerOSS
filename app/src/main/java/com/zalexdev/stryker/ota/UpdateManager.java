@@ -34,32 +34,7 @@ public final class UpdateManager {
     }
 
     public static void checkAndPrompt(Activity activity, boolean force) {
-        if (activity == null) {
-            return;
-        }
-        Context appContext = activity.getApplicationContext();
-        new Thread(() -> {
-            RemoteManifest manifest = ManifestService.fetch(appContext);
-            if (manifest == null || manifest.app == null) {
-                return;
-            }
-            RemoteManifest.AppUpdate app = manifest.app;
-            if (app.versionCode <= BuildConfig.VERSION_CODE) {
-                return;
-            }
-            if (app.url == null || !app.url.startsWith("https://")
-                    || app.sha256 == null || app.sha256.isEmpty()) {
-                return;
-            }
-            SharedPreferences prefs = ManifestService.prefs(appContext);
-            if (!force && !app.mandatory && prefs.getInt(KEY_SKIP, 0) == app.versionCode) {
-                return;
-            }
-            if (activity.isFinishing() || activity.isDestroyed()) {
-                return;
-            }
-            activity.runOnUiThread(() -> showDialog(activity, app, prefs));
-        }).start();
+        // Auto-update disabled
     }
 
     private static void showDialog(Activity activity, RemoteManifest.AppUpdate app, SharedPreferences prefs) {
