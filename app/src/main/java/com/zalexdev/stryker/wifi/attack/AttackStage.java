@@ -16,7 +16,11 @@ public enum AttackStage {
     DEAUTH("Deauthenticating clients"),
     EAPOL("Handshake / PMKID"),
     SAVE("Saving the capture"),
-    INJECT("Injecting frames");
+    INJECT("Injecting frames"),
+    AP_START("Starting rogue AP"),
+    DHCP("DHCP + DNS spoof"),
+    PORTAL("Captive portal active"),
+    CAPTURING("Capturing credentials");
 
     public final String label;
 

