@@ -575,7 +575,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
             case 6:  return AttackKind.WPS_PIN_LIST;
             case 7:  return AttackKind.DEAUTH_ONE;
             case 8:  return AttackKind.WPS_PIN_NULL;
-            case 9:  return AttackKind.WPS_PIN_ONE; // PBC uses similar kind
+            case 9:  return AttackKind.WPS_PBC;
             case 1:
             default: return AttackKind.PIXIE_DUST;
         }
@@ -1914,6 +1914,7 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(core.getContext().getResources(), R.drawable.w8logo))
                 .setTicker("Brute")
                 .setContentTitle(key)
                 .setChannelId(CHANNEL_ID)

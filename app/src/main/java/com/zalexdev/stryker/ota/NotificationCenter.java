@@ -43,6 +43,7 @@ public final class NotificationCenter {
                 : openApp(context, null);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.w8logo))
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
@@ -55,6 +56,7 @@ public final class NotificationCenter {
         ensureChannel(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.w8logo))
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))

@@ -64,6 +64,11 @@ public enum AttackKind {
             new AttackMetric[] { ELAPSED, STATE, PIN, PROGRESS, LEFT, LOCK },
             null),
 
+    WPS_PBC("WPS Push Button (PBC)", R.drawable.wifi_tethering, R.color.accent_wifi,
+            new AttackStage[] { RADIO, ASSOC, WPS },
+            new AttackMetric[] { ELAPSED, STATE, LOCK },
+            null),
+
     PSK_BRUTE("Passphrase bruteforce", R.drawable.key, R.color.accent_handshakes,
             new AttackStage[] { WORDLIST, TRY },
             new AttackMetric[] { ELAPSED, CANDIDATE, PROGRESS, RATE, ETA },
@@ -80,6 +85,11 @@ public enum AttackKind {
             null),
 
     MASS_PIXIE("Pixie Dust sweep", R.drawable.autopixie, R.color.accent_wifi,
+            new AttackStage[] { RADIO, SWEEP, ASSOC, WPS },
+            new AttackMetric[] { ELAPSED, PROGRESS, TARGET, CRACKED, TIMEOUT, STATE },
+            null),
+
+    MASS_WPS_PBC("Auto WPS Capture", R.drawable.wifi_tethering, R.color.accent_wifi,
             new AttackStage[] { RADIO, SWEEP, ASSOC, WPS },
             new AttackMetric[] { ELAPSED, PROGRESS, TARGET, CRACKED, TIMEOUT, STATE },
             null),

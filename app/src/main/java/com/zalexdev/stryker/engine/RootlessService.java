@@ -116,6 +116,7 @@ public class RootlessService extends Service {
                 .setContentTitle("W8StrykerOSS")
                 .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(getResources(), R.drawable.w8logo))
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
