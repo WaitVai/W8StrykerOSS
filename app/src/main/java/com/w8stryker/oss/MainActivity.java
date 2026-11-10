@@ -741,7 +741,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void restoreTitle() {
-            logo.setText("StrykerOSS");
+            logo.setText("W8StrykerOSS");
         }
 
         @Override

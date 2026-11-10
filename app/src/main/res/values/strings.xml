@@ -1030,7 +1030,7 @@ manager</string>
     <string name="wpair_status_error">ERROR</string>
     <string name="wpair_status_paired">PAIRED</string>
 
-    <string name="about_title_label" translatable="false">StrykerOSS</string>
+    <string name="about_title_label" translatable="false">W8StrykerOSS</string>
     <string name="about_tagline">A free and open-source mobile pentest suite for authorized testing.</string>
     <string name="about_pill_oss">Open-Source</string>
     <string name="about_pill_root">Root Powered</string>
@@ -1386,7 +1386,7 @@ manager</string>
     <string name="vm_stat_ram">Memory</string>
     <string name="vm_stat_placeholder">—</string>
 
-    <string name="welcome_title">StrykerOSS</string>
+    <string name="welcome_title">W8StrykerOSS</string>
     <string name="welcome_subtitle">Pentest from your phone.</string>
     <string name="welcome_cta">Get started</string>
     <string name="wl_title">Wordlists</string>

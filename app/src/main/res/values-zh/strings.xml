@@ -928,7 +928,7 @@
     <string name="wpair_status_patched">已修补</string>
     <string name="wpair_status_error">错误</string>
     <string name="wpair_status_paired">已配对</string>
-    <string name="about_title_label" translatable="false">StrykerOSS</string>
+    <string name="about_title_label" translatable="false">W8StrykerOSS</string>
     <string name="about_tagline">一个免费且开源的移动渗透测试套件，仅供授权测试。</string>
     <string name="about_pill_oss">开源</string>
     <string name="about_pill_root">Root 驱动</string>
@@ -1302,7 +1302,7 @@
     <string name="vm_usb_pick_title">USB 设备</string>
     <string name="welcome_cta">开始使用</string>
     <string name="welcome_subtitle">用手机做渗透测试。</string>
-    <string name="welcome_title">StrykerOSS</string>
+    <string name="welcome_title">W8StrykerOSS</string>
     <string name="wifi_pin_source">PIN 码从哪里来？</string>
     <string name="wifi_pin_source_generated">为此 BSSID 生成</string>
     <string name="wifi_pin_source_wordlist">来自 PIN 码字典</string>
