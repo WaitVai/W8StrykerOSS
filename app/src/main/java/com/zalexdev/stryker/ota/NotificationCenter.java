@@ -42,8 +42,9 @@ public final class NotificationCenter {
                 ? openUrl(context, url)
                 : openApp(context, null);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.w8logo)
                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.w8logo))
+                .setColor(0xFFFF1744)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
@@ -55,8 +56,9 @@ public final class NotificationCenter {
     public static void postUpdate(Context context, String title, String body) {
         ensureChannel(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.w8logo)
                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.w8logo))
+                .setColor(0xFFFF1744)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))

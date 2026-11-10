@@ -1833,6 +1833,9 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
                 pass = s.replace("[+] WPA PSK: ", "").replaceAll("'", "");
                 back.setPsk(pass);
                 back.setOK(true);
+            } else if (s.contains("[+] AP SSID:")) {
+                String ss = s.replace("[+] AP SSID: ", "").replaceAll("'", "").trim();
+                back.setSsid(ss);
             }
         }
         if (out.isEmpty()) {
@@ -1913,8 +1916,9 @@ public class WiFIAdapter extends RecyclerView.Adapter<WiFIAdapter.ViewHolder> {
         b.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.w8logo)
                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(core.getContext().getResources(), R.drawable.w8logo))
+                .setColor(0xFFFF1744)
                 .setTicker("Brute")
                 .setContentTitle(key)
                 .setChannelId(CHANNEL_ID)

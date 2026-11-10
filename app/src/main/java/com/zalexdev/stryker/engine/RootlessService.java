@@ -115,8 +115,9 @@ public class RootlessService extends Service {
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("W8StrykerOSS")
                 .setContentText(text)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.w8logo)
                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(getResources(), R.drawable.w8logo))
+                .setColor(0xFFFF1744)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
