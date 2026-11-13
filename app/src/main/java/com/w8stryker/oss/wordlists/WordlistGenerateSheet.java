@@ -24,6 +24,8 @@ import com.google.android.material.textview.MaterialTextView;
 import com.w8stryker.oss.R;
 import com.w8stryker.oss.utils.Core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +34,7 @@ public final class WordlistGenerateSheet {
 
     private WordlistGenerateSheet() {}
 
-    private enum Tab { PRESETS, CHARSET, MASK, NUMERIC, MUTATE }
+    private enum Tab { PRESETS, BD_SIM, BD_NAME, NUMERIC, MUTATE }
 
     public static void show(Context context, Activity activity, Core core, Runnable onChanged) {
         build(context, activity, core, null, onChanged);
@@ -61,17 +63,29 @@ public final class WordlistGenerateSheet {
         View modeScroll = dialog.findViewById(R.id.wlgen_mode_scroll);
 
         LinearLayout blockPresets = dialog.findViewById(R.id.wlgen_block_presets);
-        LinearLayout blockCharset = dialog.findViewById(R.id.wlgen_block_charset);
-        LinearLayout blockMask = dialog.findViewById(R.id.wlgen_block_mask);
+        LinearLayout blockBd = dialog.findViewById(R.id.wlgen_block_bd);
+        LinearLayout blockBdName = dialog.findViewById(R.id.wlgen_block_bd_name);
         LinearLayout blockNumeric = dialog.findViewById(R.id.wlgen_block_numeric);
         LinearLayout blockMutate = dialog.findViewById(R.id.wlgen_block_mutate);
         LinearLayout blockOutput = dialog.findViewById(R.id.wlgen_block_output);
 
-        ChipGroup charsetChips = dialog.findViewById(R.id.wlgen_charset_chips);
-        TextInputEditText charsetCustom = dialog.findViewById(R.id.wlgen_charset_custom);
-        TextInputEditText minLen = dialog.findViewById(R.id.wlgen_min_len);
-        TextInputEditText maxLen = dialog.findViewById(R.id.wlgen_max_len);
-        TextInputEditText maskField = dialog.findViewById(R.id.wlgen_mask);
+        ChipGroup bdOperatorChips = dialog.findViewById(R.id.wlgen_bd_operators);
+        ChipGroup bdPrefixChips = dialog.findViewById(R.id.wlgen_bd_prefixes);
+        MaterialTextView bdPreview = dialog.findViewById(R.id.wlgen_bd_preview);
+        TextInputEditText bdSubPrefix = dialog.findViewById(R.id.wlgen_bd_subprefix);
+        TextInputEditText bdFrom = dialog.findViewById(R.id.wlgen_bd_from);
+        TextInputEditText bdTo = dialog.findViewById(R.id.wlgen_bd_to);
+
+        ChipGroup bdNameSources = dialog.findViewById(R.id.wlgen_bd_name_sources);
+        TextInputEditText bdNameCustom = dialog.findViewById(R.id.wlgen_bd_name_custom);
+        ChipGroup bdNameCaps = dialog.findViewById(R.id.wlgen_bd_name_caps);
+        ChipGroup bdNameNumModes = dialog.findViewById(R.id.wlgen_bd_name_num_modes);
+        TextInputEditText bdNameDigits = dialog.findViewById(R.id.wlgen_bd_name_digits);
+        View bdNameRandomWrap = dialog.findViewById(R.id.wlgen_bd_name_random_wrap);
+        TextInputEditText bdNameRandomCount = dialog.findViewById(R.id.wlgen_bd_name_random_count);
+        Chip bdNameMin8 = dialog.findViewById(R.id.wlgen_bd_name_min8);
+        MaterialTextView bdNamePreview = dialog.findViewById(R.id.wlgen_bd_name_preview);
+
         TextInputEditText fromField = dialog.findViewById(R.id.wlgen_from);
         TextInputEditText toField = dialog.findViewById(R.id.wlgen_to);
         TextInputEditText padField = dialog.findViewById(R.id.wlgen_pad);
@@ -88,19 +102,77 @@ public final class WordlistGenerateSheet {
         MaterialButton cancel = dialog.findViewById(R.id.wlgen_btn_cancel);
         MaterialButton close = dialog.findViewById(R.id.wlgen_btn_close);
 
-        maskField.setText("?d?d?d?d");
-
         final WordlistStore store = new WordlistStore(core);
         final Tab[] tab = { mutateSource != null ? Tab.MUTATE : Tab.PRESETS };
         final WordlistCategory[] category = { WordlistCategory.PASSWORD };
         final AtomicBoolean cancelled = new AtomicBoolean(false);
         final boolean[] running = { false };
+        final String[] lastAutoName = { "" };
 
-        final boolean[] useDigits = { true }, useLower = { false }, useUpper = { false }, useSpecial = { false };
-        Chip digitsChip = toggle(context, charsetChips, context.getString(R.string.wl_gen_digits), true);
-        Chip lowerChip = toggle(context, charsetChips, context.getString(R.string.wl_gen_lower), false);
-        Chip upperChip = toggle(context, charsetChips, context.getString(R.string.wl_gen_upper), false);
-        Chip specialChip = toggle(context, charsetChips, context.getString(R.string.wl_gen_special), false);
+        final List<WordlistGenerator.BdOperator> bdOperators = WordlistGenerator.bdOperators();
+        final List<Chip> opChipViews = new ArrayList<>();
+        final List<Chip> pfxChipViews = new ArrayList<>();
+        for (String pfx : WordlistGenerator.ALL_BD_PREFIXES) {
+            Chip chip = toggle(context, bdPrefixChips, pfx, true);
+            chip.setTag(pfx);
+            pfxChipViews.add(chip);
+        }
+
+        final java.util.concurrent.Callable<List<String>> selectedBdPrefixes = () -> {
+            List<String> list = new ArrayList<>();
+            for (Chip chip : pfxChipViews) {
+                if (chip.isChecked()) list.add(String.valueOf(chip.getTag()));
+            }
+            if (list.isEmpty()) list.addAll(Arrays.asList(WordlistGenerator.ALL_BD_PREFIXES));
+            return list;
+        };
+
+        final java.util.concurrent.Callable<String> bdAutoFileName = () -> {
+            List<String> selected = selectedBdPrefixes.call();
+            String sub = WordlistGenerator.digitsOnly(text(bdSubPrefix));
+            if (sub.length() > 8) sub = sub.substring(0, 8);
+            String base = null;
+            for (WordlistGenerator.BdOperator op : bdOperators) {
+                if (Arrays.asList(op.prefixes).equals(selected)) {
+                    base = op.defaultFileName.replace(".txt", "");
+                    break;
+                }
+            }
+            if (base == null) {
+                if (selected.size() == WordlistGenerator.ALL_BD_PREFIXES.length) {
+                    base = "bd-all-sim-013-019";
+                } else {
+                    StringBuilder sb = new StringBuilder("bd-sim");
+                    for (String p : selected) sb.append('-').append(p);
+                    base = sb.toString();
+                }
+            }
+            if (!sub.isEmpty()) base = base + "-" + sub;
+            return base + ".txt";
+        };
+
+        final boolean[] bdUseAllNames = { true };
+        Chip srcAllChip = toggle(context, bdNameSources, "All BD Names (" + BuiltinLists.BD_NAMES.length + "+)", true);
+        Chip srcCustomChip = toggle(context, bdNameSources, "Custom Name Only", false);
+
+        final int[] capState = { 2 }; // 0 = Capital OFF (sojib), 1 = Capital ON (Sojib), 2 = Both (sojib + Sojib), 3 = ALL CAPS (SOJIB)
+        Chip capOffChip = toggle(context, bdNameCaps, "Capital OFF (sojib12345)", false);
+        Chip capOnChip = toggle(context, bdNameCaps, "Capital ON (Sojib12345)", false);
+        Chip capBothChip = toggle(context, bdNameCaps, "Both (sojib + Sojib)", true);
+        Chip capUpperChip = toggle(context, bdNameCaps, "ALL CAPS (SOJIB12345)", false);
+
+        final WordlistGenerator.BdNameNumMode[] nameNumMode = { WordlistGenerator.BdNameNumMode.SMART_AND_RANDOM };
+        Chip numSmartChip = toggle(context, bdNameNumModes, "Smart + Random (12345 + random)", true);
+        Chip numRandomChip = toggle(context, bdNameNumModes, "Random Numbers Only", false);
+        Chip numSeqChip = toggle(context, bdNameNumModes, "All Combinations (00000–99999)", false);
+
+        final java.util.concurrent.Callable<String> bdNameAutoFileName = () -> {
+            String custom = text(bdNameCustom).replaceAll("[^A-Za-z0-9_-]", "").toLowerCase(Locale.US);
+            if (!bdUseAllNames[0] && !custom.isEmpty()) {
+                return "bd-name-" + custom + ".txt";
+            }
+            return "bd-advance-names-pass.txt";
+        };
 
         Chip mutCap = toggle(context, mutationChips, context.getString(R.string.wl_mut_capitalize), true);
         Chip mutUpper = toggle(context, mutationChips, context.getString(R.string.wl_mut_upper), false);
@@ -128,29 +200,44 @@ public final class WordlistGenerateSheet {
             WordlistGenerator.Spec spec = new WordlistGenerator.Spec();
             spec.category = category[0];
             spec.wpaLengthOnly = wpaChip.isChecked();
-            spec.name = text(nameField).isEmpty() ? defaultName(tab[0]) : text(nameField);
+            String enteredName = text(nameField);
+            if (!enteredName.isEmpty()) {
+                spec.name = enteredName;
+            } else if (tab[0] == Tab.BD_SIM) {
+                spec.name = bdAutoFileName.call();
+            } else if (tab[0] == Tab.BD_NAME) {
+                spec.name = bdNameAutoFileName.call();
+            } else {
+                spec.name = defaultName(tab[0]);
+            }
             switch (tab[0]) {
-                case CHARSET: {
-                    spec.mode = WordlistGenerator.Mode.CHARSET;
-                    String custom = text(charsetCustom);
-                    if (!custom.isEmpty()) {
-                        spec.charset = dedupeChars(custom);
-                    } else {
-                        StringBuilder sb = new StringBuilder();
-                        if (useDigits[0]) sb.append(WordlistGenerator.DIGITS);
-                        if (useLower[0]) sb.append(WordlistGenerator.LOWER);
-                        if (useUpper[0]) sb.append(WordlistGenerator.UPPER);
-                        if (useSpecial[0]) sb.append(WordlistGenerator.SPECIAL);
-                        spec.charset = sb.length() == 0 ? WordlistGenerator.DIGITS : sb.toString();
-                    }
-                    spec.minLength = Math.max(1, intOf(minLen, 4));
-                    spec.maxLength = Math.max(spec.minLength, intOf(maxLen, 4));
+                case BD_SIM: {
+                    spec.mode = WordlistGenerator.Mode.BD_SIM;
+                    spec.limit = Long.MAX_VALUE;
+                    spec.bdPrefixes = selectedBdPrefixes.call();
+                    String sub = WordlistGenerator.digitsOnly(text(bdSubPrefix));
+                    if (sub.length() > 8) sub = sub.substring(0, 8);
+                    spec.bdSubPrefix = sub;
+                    int rem = 8 - sub.length();
+                    long maxVal = rem > 0 ? (WordlistGenerator.pow10(rem) - 1) : 0L;
+                    spec.from = Math.max(0L, Math.min(longOf(bdFrom, 0L), maxVal));
+                    spec.to = Math.max(spec.from, Math.min(longOf(bdTo, maxVal), maxVal));
                     break;
                 }
-                case MASK:
-                    spec.mode = WordlistGenerator.Mode.MASK;
-                    spec.mask = text(maskField).isEmpty() ? "?d?d?d?d" : text(maskField);
+                case BD_NAME: {
+                    spec.mode = WordlistGenerator.Mode.BD_NAME;
+                    spec.limit = Long.MAX_VALUE;
+                    spec.bdUseAllNames = bdUseAllNames[0];
+                    spec.bdCustomNames = text(bdNameCustom);
+                    spec.bdCapLower = (capState[0] == 0 || capState[0] == 2);
+                    spec.bdCapFirst = (capState[0] == 1 || capState[0] == 2);
+                    spec.bdCapUpper = (capState[0] == 3);
+                    spec.bdNameNumMode = nameNumMode[0];
+                    spec.bdNumDigits = Math.max(1, Math.min(8, intOf(bdNameDigits, 5)));
+                    spec.bdRandomPerName = Math.max(1, intOf(bdNameRandomCount, 500));
+                    spec.bdMin8Chars = bdNameMin8.isChecked();
                     break;
+                }
                 case NUMERIC:
                     spec.mode = WordlistGenerator.Mode.NUMERIC;
                     spec.from = longOf(fromField, 0);
@@ -178,11 +265,14 @@ public final class WordlistGenerateSheet {
         final Runnable refreshEstimate = () -> {
             if (tab[0] == Tab.PRESETS) return;
             try {
-                long n = WordlistGenerator.estimate(specOf.call());
+                WordlistGenerator.Spec s = specOf.call();
+                long n = WordlistGenerator.estimate(s);
                 estimate.setText(n < 0
                         ? context.getString(R.string.wl_gen_estimate_unknown)
                         : context.getString(R.string.wl_gen_estimate, String.format(Locale.US, "%,d", n)));
-                boolean capped = n >= WordlistGenerator.DEFAULT_LIMIT;
+                boolean capped = s.mode != WordlistGenerator.Mode.BD_SIM
+                        && s.mode != WordlistGenerator.Mode.BD_NAME
+                        && n >= WordlistGenerator.DEFAULT_LIMIT;
                 estimate.setTextColor(capped ? 0xFFEF6C00 : 0xFF757575);
                 if (capped) {
                     estimate.setText(context.getString(R.string.wl_gen_estimate_capped,
@@ -193,43 +283,216 @@ public final class WordlistGenerateSheet {
             }
         };
 
+        final Runnable updateBdPreview = () -> {
+            try {
+                List<String> selected = selectedBdPrefixes.call();
+                String sub = WordlistGenerator.digitsOnly(text(bdSubPrefix));
+                if (sub.length() > 8) sub = sub.substring(0, 8);
+                int rem = 8 - sub.length();
+                String firstPfx = selected.get(0);
+                String sampleTail = "97457441".substring(sub.length());
+                String sample = firstPfx + sub + sampleTail;
+                StringBuilder pfxList = new StringBuilder();
+                for (int i = 0; i < selected.size(); i++) {
+                    if (i > 0) pfxList.append(", ");
+                    pfxList.append(selected.get(i));
+                }
+                if (rem > 0) {
+                    bdPreview.setText(String.format(Locale.US,
+                            "11 Digits · [%s]%s + %d digits (%s–%s) · e.g. %s",
+                            pfxList, sub.isEmpty() ? "" : "+" + sub, rem,
+                            repeat('0', rem), repeat('9', rem), sample));
+                } else {
+                    bdPreview.setText(String.format(Locale.US,
+                            "11 Digits · [%s] + %s · e.g. %s",
+                            pfxList, sub, sample));
+                }
+                String currentName = text(nameField);
+                String autoName = bdAutoFileName.call();
+                if (currentName.isEmpty() || currentName.equals(lastAutoName[0])) {
+                    nameField.setText(autoName);
+                    lastAutoName[0] = autoName;
+                }
+            } catch (Exception ignored) {
+            }
+            refreshEstimate.run();
+        };
+
+        final Runnable updateBdNamePreview = () -> {
+            try {
+                String rawCustom = text(bdNameCustom).replaceAll("[^A-Za-z]", "").toLowerCase(Locale.US);
+                String sampleBase = rawCustom.isEmpty() ? "sojib" : rawCustom;
+                int digits = Math.max(1, Math.min(8, intOf(bdNameDigits, 5)));
+                boolean min8 = bdNameMin8.isChecked() || wpaChip.isChecked();
+                if (min8 && sampleBase.length() + digits < 8) {
+                    digits = 8 - sampleBase.length();
+                }
+                String numSample = "12345678".substring(0, Math.min(8, digits));
+                String rndSample = "48291736".substring(0, Math.min(8, digits));
+                String capSample = Character.toUpperCase(sampleBase.charAt(0)) + sampleBase.substring(1);
+                String ex;
+                if (capState[0] == 0) {
+                    ex = sampleBase + numSample + ", " + sampleBase + rndSample;
+                } else if (capState[0] == 1) {
+                    ex = capSample + numSample + ", " + capSample + rndSample;
+                } else if (capState[0] == 3) {
+                    String up = sampleBase.toUpperCase(Locale.US);
+                    ex = up + numSample + ", " + up + rndSample;
+                } else {
+                    ex = sampleBase + numSample + ", " + capSample + numSample + ", " + sampleBase + rndSample;
+                }
+                bdNamePreview.setText(String.format(Locale.US,
+                        "%s · e.g. %s",
+                        min8 ? "Min 8 chars (Wi-Fi)" : "Any length",
+                        ex));
+                bdNameRandomWrap.setVisibility(
+                        nameNumMode[0] == WordlistGenerator.BdNameNumMode.SEQUENTIAL_ALL
+                                ? View.GONE : View.VISIBLE);
+                String currentName = text(nameField);
+                String autoName = bdNameAutoFileName.call();
+                if (currentName.isEmpty() || currentName.equals(lastAutoName[0])) {
+                    nameField.setText(autoName);
+                    lastAutoName[0] = autoName;
+                }
+            } catch (Exception ignored) {
+            }
+            refreshEstimate.run();
+        };
+
+        srcAllChip.setOnClickListener(v -> {
+            bdUseAllNames[0] = true;
+            srcAllChip.setChecked(true);
+            srcCustomChip.setChecked(false);
+            updateBdNamePreview.run();
+        });
+        srcCustomChip.setOnClickListener(v -> {
+            bdUseAllNames[0] = false;
+            srcAllChip.setChecked(false);
+            srcCustomChip.setChecked(true);
+            updateBdNamePreview.run();
+        });
+
+        View.OnClickListener capClick = v -> {
+            if (v == capOffChip) capState[0] = 0;
+            else if (v == capOnChip) capState[0] = 1;
+            else if (v == capUpperChip) capState[0] = 3;
+            else capState[0] = 2;
+            capOffChip.setChecked(capState[0] == 0);
+            capOnChip.setChecked(capState[0] == 1);
+            capBothChip.setChecked(capState[0] == 2);
+            capUpperChip.setChecked(capState[0] == 3);
+            updateBdNamePreview.run();
+        };
+        capOffChip.setOnClickListener(capClick);
+        capOnChip.setOnClickListener(capClick);
+        capBothChip.setOnClickListener(capClick);
+        capUpperChip.setOnClickListener(capClick);
+
+        View.OnClickListener numModeClick = v -> {
+            if (v == numRandomChip) nameNumMode[0] = WordlistGenerator.BdNameNumMode.RANDOM_ONLY;
+            else if (v == numSeqChip) nameNumMode[0] = WordlistGenerator.BdNameNumMode.SEQUENTIAL_ALL;
+            else nameNumMode[0] = WordlistGenerator.BdNameNumMode.SMART_AND_RANDOM;
+            numSmartChip.setChecked(nameNumMode[0] == WordlistGenerator.BdNameNumMode.SMART_AND_RANDOM);
+            numRandomChip.setChecked(nameNumMode[0] == WordlistGenerator.BdNameNumMode.RANDOM_ONLY);
+            numSeqChip.setChecked(nameNumMode[0] == WordlistGenerator.BdNameNumMode.SEQUENTIAL_ALL);
+            updateBdNamePreview.run();
+        };
+        numSmartChip.setOnClickListener(numModeClick);
+        numRandomChip.setOnClickListener(numModeClick);
+        numSeqChip.setOnClickListener(numModeClick);
+        bdNameMin8.setOnClickListener(v -> updateBdNamePreview.run());
+        wpaChip.setOnClickListener(v -> {
+            if (tab[0] == Tab.BD_NAME) updateBdNamePreview.run();
+            else refreshEstimate.run();
+        });
+
+        final boolean[] syncingBd = { false };
+        for (int i = 0; i < bdOperators.size(); i++) {
+            final WordlistGenerator.BdOperator op = bdOperators.get(i);
+            Chip chip = toggle(context, bdOperatorChips, op.title, i == 0);
+            opChipViews.add(chip);
+            chip.setOnClickListener(v -> {
+                syncingBd[0] = true;
+                for (Chip oc : opChipViews) oc.setChecked(oc == chip);
+                List<String> opPfxs = Arrays.asList(op.prefixes);
+                for (Chip pc : pfxChipViews) {
+                    pc.setChecked(opPfxs.contains(String.valueOf(pc.getTag())));
+                }
+                syncingBd[0] = false;
+                updateBdPreview.run();
+            });
+        }
+
+        for (Chip pc : pfxChipViews) {
+            pc.setOnClickListener(v -> {
+                if (syncingBd[0]) return;
+                boolean any = false;
+                for (Chip c : pfxChipViews) if (c.isChecked()) { any = true; break; }
+                if (!any) pc.setChecked(true);
+                try {
+                    List<String> sel = selectedBdPrefixes.call();
+                    for (int i = 0; i < bdOperators.size(); i++) {
+                        boolean match = Arrays.asList(bdOperators.get(i).prefixes).equals(sel);
+                        opChipViews.get(i).setChecked(match);
+                    }
+                } catch (Exception ignored) {
+                }
+                updateBdPreview.run();
+            });
+        }
+
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void afterTextChanged(Editable s) { refreshEstimate.run(); }
         };
-        charsetCustom.addTextChangedListener(watcher);
-        minLen.addTextChangedListener(watcher);
-        maxLen.addTextChangedListener(watcher);
-        maskField.addTextChangedListener(watcher);
         fromField.addTextChangedListener(watcher);
         toField.addTextChangedListener(watcher);
         padField.addTextChangedListener(watcher);
+        bdFrom.addTextChangedListener(watcher);
+        bdTo.addTextChangedListener(watcher);
+        bdSubPrefix.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(Editable s) {
+                String sub = WordlistGenerator.digitsOnly(s == null ? "" : s.toString());
+                if (sub.length() > 8) sub = sub.substring(0, 8);
+                int rem = 8 - sub.length();
+                bdFrom.setText(rem > 0 ? repeat('0', rem) : "0");
+                bdTo.setText(rem > 0 ? repeat('9', rem) : "0");
+                updateBdPreview.run();
+            }
+        });
 
-        View.OnClickListener charsetToggle = v -> {
-            useDigits[0] = digitsChip.isChecked();
-            useLower[0] = lowerChip.isChecked();
-            useUpper[0] = upperChip.isChecked();
-            useSpecial[0] = specialChip.isChecked();
-            refreshEstimate.run();
+        TextWatcher bdNameWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+            @Override public void afterTextChanged(Editable s) { updateBdNamePreview.run(); }
         };
-        digitsChip.setOnClickListener(charsetToggle);
-        lowerChip.setOnClickListener(charsetToggle);
-        upperChip.setOnClickListener(charsetToggle);
-        specialChip.setOnClickListener(charsetToggle);
+        bdNameCustom.addTextChangedListener(bdNameWatcher);
+        bdNameDigits.addTextChangedListener(bdNameWatcher);
+        bdNameRandomCount.addTextChangedListener(bdNameWatcher);
 
         final Runnable showTab = () -> {
             blockPresets.setVisibility(tab[0] == Tab.PRESETS ? View.VISIBLE : View.GONE);
-            blockCharset.setVisibility(tab[0] == Tab.CHARSET ? View.VISIBLE : View.GONE);
-            blockMask.setVisibility(tab[0] == Tab.MASK ? View.VISIBLE : View.GONE);
+            blockBd.setVisibility(tab[0] == Tab.BD_SIM ? View.VISIBLE : View.GONE);
+            blockBdName.setVisibility(tab[0] == Tab.BD_NAME ? View.VISIBLE : View.GONE);
             blockNumeric.setVisibility(tab[0] == Tab.NUMERIC ? View.VISIBLE : View.GONE);
             blockMutate.setVisibility(tab[0] == Tab.MUTATE ? View.VISIBLE : View.GONE);
             boolean rule = tab[0] != Tab.PRESETS;
             blockOutput.setVisibility(rule ? View.VISIBLE : View.GONE);
             run.setVisibility(rule ? View.VISIBLE : View.GONE);
-            refreshEstimate.run();
+            if (tab[0] == Tab.BD_SIM) {
+                updateBdPreview.run();
+            } else if (tab[0] == Tab.BD_NAME) {
+                updateBdNamePreview.run();
+            } else {
+                refreshEstimate.run();
+            }
         };
 
+        final Chip[] bdSimTabChip = { null };
+        final Chip[] bdNameTabChip = { null };
         if (mutateSource != null) {
             title.setText(R.string.wl_mut_title);
             status.setText(context.getString(R.string.wl_mut_subtitle, mutateSource.getName()));
@@ -241,18 +504,75 @@ public final class WordlistGenerateSheet {
                 tab[0] = Tab.PRESETS;
                 showTab.run();
             });
-            addTab(context, modes, context.getString(R.string.wl_gen_tab_charset), false, () -> {
-                tab[0] = Tab.CHARSET;
+            bdSimTabChip[0] = addTab(context, modes, context.getString(R.string.wl_gen_tab_bd_sim), false, () -> {
+                tab[0] = Tab.BD_SIM;
                 showTab.run();
             });
-            addTab(context, modes, context.getString(R.string.wl_gen_tab_mask), false, () -> {
-                tab[0] = Tab.MASK;
+            bdNameTabChip[0] = addTab(context, modes, context.getString(R.string.wl_gen_tab_bd_name), false, () -> {
+                tab[0] = Tab.BD_NAME;
                 showTab.run();
             });
             addTab(context, modes, context.getString(R.string.wl_gen_tab_numeric), false, () -> {
                 tab[0] = Tab.NUMERIC;
                 showTab.run();
             });
+        }
+
+        {
+            View nameRow = LayoutInflater.from(context)
+                    .inflate(R.layout.item_wordlist_offer, blockPresets, false);
+            ImageView icon = nameRow.findViewById(R.id.wloffer_icon);
+            MaterialTextView rowTitle = nameRow.findViewById(R.id.wloffer_title);
+            MaterialTextView rowDesc = nameRow.findViewById(R.id.wloffer_desc);
+            MaterialTextView rowSize = nameRow.findViewById(R.id.wloffer_size);
+            ImageView action = nameRow.findViewById(R.id.wloffer_action);
+
+            icon.setImageResource(R.drawable.name);
+            icon.setColorFilter(0xFF1565C0);
+            rowTitle.setText("BD · Advance Name + Number");
+            rowDesc.setText("All Bangladeshi names + random/sequential numbers (e.g. sojib12345, Sojib12345) · Min 8 chars");
+            rowSize.setText("8+ chars");
+            action.setColorFilter(0xFF1565C0);
+
+            nameRow.setOnClickListener(v -> {
+                if (bdNameTabChip[0] != null) {
+                    bdNameTabChip[0].setChecked(true);
+                }
+                tab[0] = Tab.BD_NAME;
+                showTab.run();
+            });
+            blockPresets.addView(nameRow);
+        }
+
+        for (int i = 0; i < bdOperators.size(); i++) {
+            final int opIndex = i;
+            final WordlistGenerator.BdOperator op = bdOperators.get(i);
+            View row = LayoutInflater.from(context)
+                    .inflate(R.layout.item_wordlist_offer, blockPresets, false);
+            ImageView icon = row.findViewById(R.id.wloffer_icon);
+            MaterialTextView rowTitle = row.findViewById(R.id.wloffer_title);
+            MaterialTextView rowDesc = row.findViewById(R.id.wloffer_desc);
+            MaterialTextView rowSize = row.findViewById(R.id.wloffer_size);
+            ImageView action = row.findViewById(R.id.wloffer_action);
+
+            icon.setImageResource(R.drawable.ic_phone);
+            icon.setColorFilter(0xFF00897B);
+            rowTitle.setText("BD · " + op.title);
+            rowDesc.setText(op.description);
+            rowSize.setText("11 digits");
+            action.setColorFilter(0xFF00897B);
+
+            row.setOnClickListener(v -> {
+                if (opIndex < opChipViews.size()) {
+                    opChipViews.get(opIndex).performClick();
+                }
+                if (bdSimTabChip[0] != null) {
+                    bdSimTabChip[0].setChecked(true);
+                }
+                tab[0] = Tab.BD_SIM;
+                showTab.run();
+            });
+            blockPresets.addView(row);
         }
 
         for (WordlistGenerator.Preset preset : WordlistGenerator.presets()) {
@@ -364,12 +684,18 @@ public final class WordlistGenerateSheet {
 
     private static String defaultName(Tab tab) {
         switch (tab) {
-            case CHARSET: return "charset.txt";
-            case MASK: return "mask.txt";
+            case BD_SIM: return "bd-sim-numbers.txt";
+            case BD_NAME: return "bd-advance-names-pass.txt";
             case NUMERIC: return "numeric.txt";
             case MUTATE: return "mutated.txt";
             default: return "generated.txt";
         }
+    }
+
+    private static String repeat(char c, int count) {
+        StringBuilder sb = new StringBuilder(Math.max(0, count));
+        for (int i = 0; i < count; i++) sb.append(c);
+        return sb.toString();
     }
 
     private static String dedupeChars(String s) {
@@ -392,7 +718,7 @@ public final class WordlistGenerateSheet {
         return chip;
     }
 
-    private static void addTab(Context context, ChipGroup group, String text,
+    private static Chip addTab(Context context, ChipGroup group, String text,
                                boolean checked, Runnable onSelected) {
         Chip chip = new Chip(context);
         chip.setText(text);
@@ -402,6 +728,7 @@ public final class WordlistGenerateSheet {
         chip.setChipMinHeight(dp(context, 30));
         chip.setOnClickListener(v -> onSelected.run());
         group.addView(chip);
+        return chip;
     }
 
     private static float dp(Context context, int value) {

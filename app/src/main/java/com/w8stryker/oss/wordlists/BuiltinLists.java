@@ -140,4 +140,62 @@ final class BuiltinLists {
                 "0987654321", "9876543210", "azerty", "azertyuiop", "qwertz"
         );
     }
+
+    public static final String[] BD_NAMES = {
+            "sojib", "sajib", "sakib", "shakib", "rakib", "hasan", "hossain", "rahim", "karim", "tarek",
+            "tariq", "tanvir", "tamim", "fahim", "faisal", "farhan", "imran", "kamrul", "masud", "mahmud",
+            "mamun", "mehedi", "mahfuz", "monir", "munna", "nahid", "najmul", "nazmul", "nayeem", "naim",
+            "parvez", "polash", "palash", "rasel", "rashed", "rifat", "ripon", "robin", "rubel", "sabbir",
+            "sadik", "saiful", "salman", "samir", "siam", "shanto", "sharif", "shahin", "shamim", "shawon",
+            "shuvo", "suvo", "shohag", "sohag", "sohel", "shohel", "sumon", "sujon", "tuhin", "zahid",
+            "jahid", "zakir", "jakir", "zaman", "arman", "ashik", "ashiq", "asif", "atik", "atick",
+            "bappy", "bappi", "biplob", "badhon", "emran", "emon", "enan", "forhad", "habib", "hridoy",
+            "ridoy", "iqbal", "ikbal", "israfil", "jibon", "jewel", "juel", "joy", "kawsar", "khaled",
+            "limon", "liton", "maruf", "milon", "mithu", "mizan", "mobarak", "mohammad", "muhammad", "mostafa",
+            "mustafiz", "murad", "nadim", "nasir", "noyon", "nayan", "omar", "ovi", "abir", "adnan",
+            "afsar", "akash", "alamin", "aminul", "amir", "ananda", "anik", "anis", "anwar", "apon",
+            "arafat", "arif", "ariful", "ashraful", "azad", "aziz", "babu", "babul", "belal", "billal",
+            "chandan", "dipu", "dipok", "dulal", "faruk", "firoz", "gazi", "golam", "halim", "hamid",
+            "harun", "hasib", "helal", "himel", "humayun", "ibrahim", "ismail", "jahangir", "jalal", "jamal",
+            "jashim", "jasim", "jony", "johir", "kabir", "kader", "kalam", "kamal", "khalil", "khokon",
+            "kibria", "labib", "latif", "lokman", "lutfor", "mahbub", "mahin", "majed", "manik", "mannan",
+            "masum", "matin", "mazhar", "mehrab", "mizanur", "mofiz", "mohsin", "moin", "moinul", "mokbul",
+            "momin", "monirul", "morshed", "mosharraf", "mostakim", "motaleb", "mozammel", "muhib", "muktadir", "munir",
+            "mushfiq", "musfiq", "mustakim", "nabi", "nafis", "nahian", "nasim", "nizam", "nurul", "obaidul",
+            "osman", "pavel", "prince", "rafi", "rafiq", "rafsan", "rahat", "raihan", "rayhan", "rajib",
+            "raju", "ramim", "rana", "ratan", "ratul", "raza", "rejaul", "reza", "rezaul", "riad",
+            "riyad", "riaz", "rizvi", "rokon", "romjan", "rony", "roni", "rupok", "saad", "sadman",
+            "sagar", "sagor", "sahab", "sahid", "saidul", "sajal", "sajid", "saju", "salam", "saleh",
+            "salim", "samad", "samiul", "sanaullah", "sanwar", "sarwar", "sattar", "sayeed", "sayem", "selim",
+            "shafiq", "shafiqul", "shahadat", "shahan", "shahid", "shahidul", "shahinur", "shahjahan", "shahriar", "shajal",
+            "shakil", "shakeel", "shamsul", "shariful", "shawkot", "sheikh", "shihab", "shimul", "shiraj", "shishir",
+            "shobuj", "sobuj", "shorif", "shovon", "siddik", "siraj", "sohan", "sofik", "solaiman", "sourav",
+            "shourav", "subrata", "sultan", "sunny", "syed", "tahmid", "tajul", "talha", "tanim", "tanmoy",
+            "taposh", "tarikul", "tauhid", "tawhid", "tofael", "toufiq", "towhid", "tushar", "uzzal", "ujjal",
+            "wahid", "walid", "yeasin", "yasin", "yousuf", "yusuf", "zafar", "zafor", "zillur", "zubayer",
+            "jubayer", "zunaid", "junaid", "mim", "sumaiya", "sadia", "nusrat", "jannat", "jannatul", "farzana",
+            "fatema", "tania", "taslima", "tahmina", "tamanna", "sharmin", "shirin", "salma", "sabina", "ruksana",
+            "rima", "rekha", "rahela", "poly", "pinky", "parvin", "nasrin", "nahar", "mousumi", "moni",
+            "maliha", "mahmuda", "liza", "lipi", "lima", "lamia", "kulsum", "khadija", "keya", "kaniz",
+            "jesmin", "israt", "hasina", "halima", "habiba", "fariha", "fahmida", "eva", "dipa", "champa",
+            "bithi", "bristy", "asha", "arifa", "anika", "akhi", "afroza", "afsana", "adiba", "abida",
+            "puja", "priya", "riya", "rina", "runa", "rupa", "ruma", "sathi", "shathi", "shilpi",
+            "shila", "soma", "sonia", "sumi", "supti", "swarna", "tonni", "trisha", "tumpa", "urmi",
+            "zakia", "nila", "niloy", "nabil", "nabin", "shafayat", "shafayet", "redwan", "ridwan", "mahdi"
+    };
+
+    public static final String[] BD_NAME_COMMON_NUMBERS = {
+            "123", "1234", "12345", "123456", "1234567", "12345678",
+            "1122", "112233", "11223344", "1212", "123123",
+            "000", "0000", "00000", "000000",
+            "111", "1111", "11111", "111111",
+            "222", "2222", "22222", "333", "3333", "33333",
+            "444", "4444", "44444", "555", "5555", "55555",
+            "666", "6666", "66666", "777", "7777", "77777",
+            "888", "8888", "88888", "999", "9999", "99999",
+            "786", "0786", "7860", "786786",
+            "007", "0007", "00007", "420", "0420", "4200",
+            "321", "4321", "54321", "654321", "87654321",
+            "1010", "2020", "3030", "4040", "5050", "6969", "8080", "9090"
+    };
 }

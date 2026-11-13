@@ -44,7 +44,9 @@ public enum WordlistCategory {
         if (n.contains("dir") || n.contains("path") || n.contains("subdomain")
                 || n.contains("vhost") || n.contains("fuzz") || n.contains("endpoint")) return WEB;
         if (n.contains("pass") || n.contains("rockyou") || n.contains("wordlist")
-                || n.contains("credential")) return PASSWORD;
+                || n.contains("credential") || n.contains("bd-") || n.contains("sim")
+                || n.contains("banglalink") || n.contains("grameen") || n.contains("robi")
+                || n.contains("airtel") || n.contains("teletalk")) return PASSWORD;
         return OTHER;
     }
 

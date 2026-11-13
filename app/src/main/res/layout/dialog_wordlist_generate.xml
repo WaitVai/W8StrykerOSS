@@ -97,7 +97,7 @@
                 android:paddingEnd="12dp" />
 
             <LinearLayout
-                android:id="@+id/wlgen_block_charset"
+                android:id="@+id/wlgen_block_bd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -106,29 +106,67 @@
                 android:paddingEnd="16dp"
                 android:visibility="gone">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/wlgen_charset_chips"
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/wl_gen_bd_operator_label"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wlgen_bd_operators"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:chipSpacingVertical="2dp"
+                    app:singleSelection="true" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/wl_gen_bd_prefix_label"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wlgen_bd_prefixes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:chipSpacingVertical="2dp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/wlgen_bd_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#00897B"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:hint="@string/wl_gen_charset_custom">
+                    android:layout_marginTop="6dp"
+                    android:hint="@string/wl_gen_bd_subprefix_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/wlgen_charset_custom"
+                        android:id="@+id/wlgen_bd_subprefix"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
+                        android:inputType="number"
+                        android:maxLength="8"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -137,15 +175,16 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:hint="@string/wl_gen_min_len">
+                        android:hint="@string/wl_gen_bd_from_hint">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/wlgen_min_len"
+                            android:id="@+id/wlgen_bd_from"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
+                            android:maxLength="8"
                             android:maxLines="1"
-                            android:text="4" />
+                            android:text="00000000" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -154,21 +193,30 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:hint="@string/wl_gen_max_len">
+                        android:hint="@string/wl_gen_bd_to_hint">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/wlgen_max_len"
+                            android:id="@+id/wlgen_bd_to"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
+                            android:maxLength="8"
                             android:maxLines="1"
-                            android:text="4" />
+                            android:text="99999999" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/wl_gen_bd_help"
+                    android:textColor="@color/grey"
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/wlgen_block_mask"
+                android:id="@+id/wlgen_block_bd_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -177,24 +225,140 @@
                 android:paddingEnd="16dp"
                 android:visibility="gone">
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wl_gen_bd_name_source_label"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wlgen_bd_name_sources"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:chipSpacingVertical="2dp"
+                    app:singleSelection="true" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/wl_gen_mask">
+                    android:layout_marginTop="4dp"
+                    android:hint="@string/wl_gen_bd_name_custom_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/wlgen_mask"
+                        android:id="@+id/wlgen_bd_name_custom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
+                        android:inputType="textPersonName"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/wl_gen_mask_help"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/wl_gen_bd_name_cap_label"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wlgen_bd_name_caps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:chipSpacingVertical="2dp"
+                    app:singleSelection="true" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/wl_gen_bd_name_num_label"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wlgen_bd_name_num_modes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:chipSpacingVertical="2dp"
+                    app:singleSelection="true" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:hint="@string/wl_gen_bd_name_digits_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/wlgen_bd_name_digits"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="1"
+                            android:maxLines="1"
+                            android:text="5" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/wlgen_bd_name_random_wrap"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:hint="@string/wl_gen_bd_name_random_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/wlgen_bd_name_random_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:maxLines="1"
+                            android:text="500" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/wlgen_bd_name_min8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:checkable="true"
+                    android:checked="true"
+                    android:text="@string/wl_gen_bd_name_min8"
+                    android:textSize="11sp"
+                    app:chipMinHeight="30dp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/wlgen_bd_name_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#1565C0"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/wl_gen_bd_name_help"
                     android:textColor="@color/grey"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -350,6 +514,8 @@
                     android:id="@+id/wlgen_chip_wpa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:checked="true"
                     android:text="@string/wl_gen_wpa_only"
                     android:textSize="11sp"
                     app:chipMinHeight="30dp" />
