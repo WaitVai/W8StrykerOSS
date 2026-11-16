@@ -66,7 +66,7 @@
   "app": {
     "versionCode": 651,
     "versionName": "6.5.1",
-    "url": "https://github.com/WaitVai/W8StrykerOSS/releases/download/6.5.1/Stryker.6.5.1.apk",
+    "url": "https://gitlab.com/onlytoolsbd/W8AppStore/-/raw/main/W8StrykerOSS.apk",
     "sha256": "cdd218949cf1809fddfc5f4832a40f2d2f2f91d3f0117c0d85821ba5dbc90242",
     "size": 96617041,
     "mandatory": false,

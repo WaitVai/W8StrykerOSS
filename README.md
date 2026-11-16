@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-  <a href="https://t.me/W8TeamNew">
-    <img src="https://img.shields.io/badge/DOWNLOAD-APK%20v6.5.1-00E676?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" />
+  <a href="https://gitlab.com/onlytoolsbd/W8AppStore/-/raw/main/W8StrykerOSS.apk">
+    <img src="https://img.shields.io/badge/DIRECT%20DOWNLOAD-APK%20v6.5.1-00E676?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" />
   </a>
   <a href="https://t.me/W8TeamNew">
     <img src="https://img.shields.io/badge/TELEGRAM-@W8TeamNew-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Community" />
@@ -35,8 +35,8 @@
 </p>
 
 <p align="center">
-  <a href="https://t.me/W8TeamNew">
-    <img src="https://img.shields.io/badge/📥%20GET%20APK%20FROM%20TELEGRAM%20(v6.5.1)-FF1744?style=for-the-badge&logo=telegram&logoColor=white" height="40" alt="Get APK from Telegram" />
+  <a href="https://gitlab.com/onlytoolsbd/W8AppStore/-/raw/main/W8StrykerOSS.apk">
+    <img src="https://img.shields.io/badge/📥%20DIRECT%20DOWNLOAD%20APK%20(v6.5.1)-FF1744?style=for-the-badge&logo=googleplay&logoColor=white" height="40" alt="Direct Download APK" />
   </a>
 </p>
 
@@ -83,7 +83,7 @@ When running without root access, an integrated **Rootless Linux VM (QEMU / UML)
 ## 📲 Quick Installation
 
 ### Option 1: Direct APK Download (Recommended)
-1. Download the latest release APK from our official community: [**W8StrykerOSS.apk (Telegram: @W8TeamNew)**](https://t.me/W8TeamNew)
+1. Download the latest release APK: [**W8StrykerOSS.apk (Direct Download)**](https://gitlab.com/onlytoolsbd/W8AppStore/-/raw/main/W8StrykerOSS.apk) *(Alternative: [@W8TeamNew](https://t.me/W8TeamNew) on Telegram)*
 2. Sideload and install the APK on your Android device (`Android 7.0+`).
 3. Launch **W8StrykerOSS**:
    - **Rooted Devices**: Grant root access (`su`) via Magisk / KernelSU / APatch. The initial setup will automatically download and mount the Debian Trixie rootfs (`chroot64-debian.tar.gz`).
