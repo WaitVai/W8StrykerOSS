@@ -2,16 +2,16 @@ package com.w8stryker.oss.ota;
 
 public final class StrykerEndpoints {
 
-    public static final String GITHUB_REPO = "https://github.com/W8SOJIB/W8StrykerOSS";
+    public static final String GITHUB_REPO = "https://github.com/WaitVai/W8StrykerOSS";
 
     public static final String MANIFEST_URL =
-            "https://raw.githubusercontent.com/W8SOJIB/W8StrykerOSS/main/stryker_manifest.json";
+            "https://raw.githubusercontent.com/WaitVai/W8StrykerOSS/main/stryker_manifest.json";
 
     public static final String FALLBACK_CHROOT_64 =
-            "https://github.com/W8SOJIB/W8StrykerOSS/releases/download/chroot-main/chroot64-debian.tar.gz";
+            "https://github.com/WaitVai/W8StrykerOSS/releases/download/chroot-main/chroot64-debian.tar.gz";
 
     private static final String ROOTLESS_BASE =
-            "https://github.com/W8SOJIB/W8StrykerOSS/releases/download/rootless-main/";
+            "https://github.com/WaitVai/W8StrykerOSS/releases/download/rootless-main/";
     public static final String FALLBACK_ROOTLESS_QEMU     = ROOTLESS_BASE + "qemu-system-aarch64";
     public static final String FALLBACK_ROOTLESS_KERNEL   = ROOTLESS_BASE + "Image";
     public static final String FALLBACK_ROOTLESS_LIBSLIRP = ROOTLESS_BASE + "libslirp.so";

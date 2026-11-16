@@ -1053,13 +1053,13 @@ manager</string>
     <string name="about_section_links">Official links</string>
     <string name="about_section_legal">Legal</string>
     <string name="about_link_site_label">Project site</string>
-    <string name="about_link_site_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS</string>
+    <string name="about_link_site_url" translatable="false">github.com/WaitVai/W8StrykerOSS</string>
     <string name="about_link_github_label">Source code</string>
-    <string name="about_link_github_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS</string>
+    <string name="about_link_github_url" translatable="false">github.com/WaitVai/W8StrykerOSS</string>
     <string name="about_link_blog_label">Project</string>
-    <string name="about_link_blog_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS</string>
+    <string name="about_link_blog_url" translatable="false">github.com/WaitVai/W8StrykerOSS</string>
     <string name="about_link_chat_label">Discussions</string>
-    <string name="about_link_chat_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS/discussions</string>
+    <string name="about_link_chat_url" translatable="false">github.com/WaitVai/W8StrykerOSS/discussions</string>
     <string name="about_oss_licenses_label">Open-source licenses</string>
     <string name="license_subtitle">Built on these open-source projects. Tap any entry for its source.</string>
     <string name="about_footer">W8StrykerOSS — free software (GNU GPL v3.0) — authorized testing only</string>

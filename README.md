@@ -11,16 +11,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
-    <img src="https://visitor-badge.laobi.icu/badge?page_id=W8SOJIB.W8StrykerOSS&title=REPOSITORY%20VIEWS" height="28" alt="Repository Views" />
+  <a href="https://github.com/WaitVai/W8StrykerOSS">
+    <img src="https://visitor-badge.laobi.icu/badge?page_id=WaitVai.W8StrykerOSS&title=REPOSITORY%20VIEWS" height="28" alt="Repository Views" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
-    <img src="https://img.shields.io/github/v/release/W8SOJIB/W8StrykerOSS?color=FF1744&label=LATEST%20RELEASE&style=for-the-badge&logo=github" alt="Latest Release" />
-  </a>
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
+  <a href="https://t.me/W8TeamNew">
     <img src="https://img.shields.io/badge/DOWNLOAD-APK%20v6.5.1-00E676?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" />
   </a>
   <a href="https://t.me/W8TeamNew">
@@ -29,17 +26,17 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/LICENSE-GNU%20GPL%20v3.0-blue?style=for-the-badge" alt="License GPL v3.0" />
   </a>
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+  <a href="https://github.com/WaitVai/W8StrykerOSS">
     <img src="https://img.shields.io/badge/PLATFORM-Android%20%7C%20ARM64-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android ARM64" />
   </a>
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS">
+  <a href="https://github.com/WaitVai/W8StrykerOSS">
     <img src="https://img.shields.io/badge/ENGINE-Debian%20Trixie-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian Trixie Engine" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/W8SOJIB/W8StrykerOSS/releases/latest">
-    <img src="https://img.shields.io/badge/📥%20DIRECT%20DOWNLOAD%20APK%20(v6.5.1)-FF1744?style=for-the-badge&logo=googleplay&logoColor=white" height="40" alt="Direct Download APK" />
+  <a href="https://t.me/W8TeamNew">
+    <img src="https://img.shields.io/badge/📥%20GET%20APK%20FROM%20TELEGRAM%20(v6.5.1)-FF1744?style=for-the-badge&logo=telegram&logoColor=white" height="40" alt="Get APK from Telegram" />
   </a>
 </p>
 
@@ -86,7 +83,7 @@ When running without root access, an integrated **Rootless Linux VM (QEMU / UML)
 ## 📲 Quick Installation
 
 ### Option 1: Direct APK Download (Recommended)
-1. Download the latest release: [**W8StrykerOSS.apk (v6.5.1)**](https://github.com/W8SOJIB/W8StrykerOSS/releases/latest)
+1. Download the latest release APK from our official community: [**W8StrykerOSS.apk (Telegram: @W8TeamNew)**](https://t.me/W8TeamNew)
 2. Sideload and install the APK on your Android device (`Android 7.0+`).
 3. Launch **W8StrykerOSS**:
    - **Rooted Devices**: Grant root access (`su`) via Magisk / KernelSU / APatch. The initial setup will automatically download and mount the Debian Trixie rootfs (`chroot64-debian.tar.gz`).
@@ -117,7 +114,7 @@ adb install -r W8StrykerOSS.apk
 
 ```bash
 # Clone the repository
-git clone https://github.com/W8SOJIB/W8StrykerOSS.git
+git clone https://github.com/WaitVai/W8StrykerOSS.git
 cd W8StrykerOSS
 
 # Build Debug APK
@@ -142,7 +139,7 @@ Join the official community for updates, announcements, wireless penetration tut
 </p>
 
 - **Telegram Channel**: [@W8TeamNew](https://t.me/W8TeamNew)
-- **Bug Reports & Issues**: [W8StrykerOSS Issues](https://github.com/W8SOJIB/W8StrykerOSS/issues)
+- **Bug Reports & Issues**: [W8StrykerOSS Issues](https://github.com/WaitVai/W8StrykerOSS/issues)
 
 ---
 

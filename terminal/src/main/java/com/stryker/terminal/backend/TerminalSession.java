@@ -250,7 +250,7 @@ public class TerminalSession extends TerminalOutput {
     StrykerLog.e(EmulatorDebug.LOG_TAG, "libterminal.so failed to load: " + JNI.loadError());
     byte[] msg = ("\r\n[Terminal engine unavailable: " + JNI.loadError() + "]"
         + "\r\n[Reinstall Stryker; if it persists report this at "
-        + "github.com/W8SOJIB/W8StrykerOSS/issues]\r\n")
+        + "github.com/WaitVai/W8StrykerOSS/issues]\r\n")
         .getBytes(StandardCharsets.UTF_8);
     mProcessToTerminalIOQueue.write(msg, 0, msg.length);
     mMainThreadHandler.sendEmptyMessage(MSG_NEW_INPUT);

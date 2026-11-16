@@ -949,9 +949,9 @@
     <string name="about_section_links">官方链接</string>
     <string name="about_section_legal">法律信息</string>
     <string name="about_link_site_label">项目网站</string>
-    <string name="about_link_site_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS</string>
+    <string name="about_link_site_url" translatable="false">github.com/WaitVai/W8StrykerOSS</string>
     <string name="about_link_github_label">源代码</string>
-    <string name="about_link_github_url" translatable="false">github.com/W8SOJIB/W8StrykerOSS</string>
+    <string name="about_link_github_url" translatable="false">github.com/WaitVai/W8StrykerOSS</string>
     <string name="about_oss_licenses_label">开源许可证</string>
     <string name="license_subtitle">基于这些开源项目构建。点按任一条目查看其源码。</string>
     <string name="about_footer">W8StrykerOSS — 自由软件 (GNU GPL v3.0) — 仅限授权测试</string>

@@ -6,7 +6,7 @@ what produce the published releases, not a cleaned-up approximation of them.
 
 ```sh
 sudo images/build-all.sh                  # everything, in dependency order
-images/publish.sh https://github.com/W8SOJIB/W8StrykerOSS/releases/download
+images/publish.sh https://github.com/WaitVai/W8StrykerOSS/releases/download
 ```
 
 Nothing here knows what machine it is on, and nothing here needs a machine
